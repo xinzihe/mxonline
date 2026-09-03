@@ -23,12 +23,14 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4bk(+x$j-o40mz$gpuh2xe@@ujh5ne+ypkux4tn^gepq-f(hb-'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError('DJANGO_SECRET_KEY must be set.')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '').lower() in {'1', 'true', 'yes'}
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if host.strip()]
 # DEBUG = False
 #
 # # 关闭 DEBUG 后必须配置 ALLOWED_HOSTS，否则会报 400 错误
@@ -105,10 +107,11 @@ WSGI_APPLICATION = 'MxOnline.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "mxonline",
-        'USER': "root",
-        'PASSWORD': "eduvideo890..",
-        'HOST': "127.0.0.1",
+        'NAME': os.environ.get('MYSQL_DATABASE', 'mxonline'),
+        'USER': os.environ.get('MYSQL_USER', 'root'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', ''),
+        'HOST': os.environ.get('MYSQL_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
     }
 }
 
@@ -162,17 +165,25 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # 邮箱设置
-EMAIL_HOST = "smtp.sina.com"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "zhixingonline@sina.cn"
-EMAIL_HOST_PASSWORD = "316df1591ba6d50a"
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.sina.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465'))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_FROM = EMAIL_HOST_USER
 
-EMAIL_VERIFY_TTL_MINUTES = 30
-SITE_URL = 'http://127.0.0.1:8000'
+EMAIL_VERIFY_TTL_MINUTES = int(os.environ.get('EMAIL_VERIFY_TTL_MINUTES', '30'))
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'true').lower() in {'1', 'true', 'yes'}
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31_536_000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # 授权码
 # 316df1591ba6d50a
