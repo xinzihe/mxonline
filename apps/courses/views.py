@@ -24,6 +24,14 @@ class CourseListView(View):
                 Q(name__icontains=search_keywords) | Q(desc__icontains=search_keywords) | Q(
                     detail__icontains=search_keywords))
 
+        category = request.GET.get('category', '')
+        if category:
+            all_courses = all_courses.filter(category=category)
+
+        degree = request.GET.get('degree', '')
+        if degree in {'cj', 'zj', 'gj'}:
+            all_courses = all_courses.filter(degree=degree)
+
         # 课程排序
         sort = request.GET.get('sort', "")
         if sort:
@@ -42,7 +50,10 @@ class CourseListView(View):
         return render(request, 'course-list.html', {
             "all_courses": courses,
             "sort": sort,
-            "hot_courses": hot_courses
+            "hot_courses": hot_courses,
+            "category": category,
+            "degree": degree,
+            "keywords": search_keywords,
         })
 
 

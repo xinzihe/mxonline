@@ -197,7 +197,7 @@
                         <!-- 右侧操作栏 -->
                         <div class="teacher-action">
                             <a href="{% url 'org:teacher_detail' teacher.id %}" class="btn-teacher-detail">查看详情</a>
-                            <a href="{% url 'org:teacher_detail' teacher.id %}" class="btn-teacher-fav">❤️ 关注讲师</a>
+                            <button type="button" class="btn-teacher-fav" data-favorite data-fav-id="{{ teacher.id }}" data-fav-type="3">❤️ 关注讲师</button>
                         </div>
                     </div>
                 {% empty %}
@@ -284,4 +284,5 @@
 <!-- 引入授课讲师页专属 JS -->
 {% block custom_js %}
     <script src="{% static 'js/teachers-list.js' %}"></script>
+    <script src="{% static 'js/favorite.js' %}" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>
 {% endblock %}

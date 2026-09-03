@@ -374,3 +374,4 @@
     transition: opacity 0.2s;
 }
 .btn-recruit:hover { opacity: 0.9; }
+.btn-teacher-fav{border:0;font:inherit;cursor:pointer}

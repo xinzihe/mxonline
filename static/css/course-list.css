@@ -309,3 +309,6 @@
     font-size: 11px;
     color: #94a3b8;
 }
+.learning-guide { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; }
+.learning-guide-title { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+.learning-guide-copy { font-size: 12px; opacity: .9; line-height: 1.5; margin: 0; }

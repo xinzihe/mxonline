@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% comment %}
 {% block title %}公开课视频信息 - 慕学在线网{% endblock %}
 {% load static %}
 {% block custom_bread %}
@@ -156,4 +157,11 @@
 </div>
 </div>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+{% block title %}{{ course.name }} - 学习中心{% endblock %}
+{% block nav_course %}active{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{% static 'css/learning.css' %}">{% endblock %}
+{% block content %}<section class="learning-header"><div><a href="{% url 'course:course_detail' course.id %}">← 返回课程详情</a><h1>{{ course.name }}</h1><p>{{ course.get_degree_display }} · {{ course.learn_times }} 分钟</p></div><div class="learning-tabs"><a class="active" href="{% url 'course:course_info' course.id %}">章节</a><a href="{% url 'course:course_comments' course.id %}">评论</a></div></section><section class="learning-layout"><article class="chapter-panel"><h2>课程章节</h2>{% for lesson in course.get_course_lesson %}<div class="lesson-item"><h3>{{ forloop.counter }}. {{ lesson.name }}</h3><ul>{% for video in lesson.get_lesson_video %}<li><a href="{% url 'course:video_play' video.id %}" target="_blank">▶ {{ video.name }} <small>{{ video.learn_times }} 分钟</small></a></li>{% empty %}<li class="muted">本章节暂无视频</li>{% endfor %}</ul></div>{% empty %}<p class="muted">课程内容正在完善中。</p>{% endfor %}</article><aside class="resource-panel"><h2>课程资源</h2>{% for course_resource in course_resources %}<a href="{{ MEDIA_URL }}{{ course_resource.download }}" download>{{ course_resource.name }} <span>下载</span></a>{% empty %}<p class="muted">暂无可下载资源</p>{% endfor %}<h2>同学还学过</h2>{% for relate_course in relate_courses %}<a href="{% url 'course:course_detail' relate_course.id %}">{{ relate_course.name }}</a>{% empty %}<p class="muted">暂无推荐</p>{% endfor %}</aside></section>{% endblock %}
 

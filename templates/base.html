@@ -198,13 +198,13 @@
             </div>
         </a>
 
-        <form class="search-box" action="{% url 'course:course_list' %}" method="get">
+        <form class="search-box" action="{% url 'course:course_list' %}" method="get" data-search-form>
             <select name="type">
                 <option value="course">课程</option>
                 <option value="org">机构</option>
                 <option value="teacher">讲师</option>
             </select>
-            <input type="text" name="keywords" placeholder="搜索感兴趣的内容..." />
+            <input type="text" name="keywords" value="{{ request.GET.keywords|default:'' }}" placeholder="搜索感兴趣的内容..." />
             <button type="submit">搜索</button>
         </form>
     </div>
@@ -233,7 +233,7 @@
         </div>
         <div>
             <h4>快捷链接</h4>
-            <p><a href="{% url 'index' %}" style="color:#94a3b8;">首页</a></p>
+            <p><a href="{% url 'index' %}" class="footer-link">首页</a></p>
         </div>
     </div>
     <div class="footer-copyright">
@@ -242,6 +242,7 @@
 </footer>
 
 <script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/base.js' %}"></script>
 <!-- 预留子页面 JS 引用入口 -->
 {% block custom_js %}{% endblock %}
 </body>
