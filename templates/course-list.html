@@ -1,0 +1,283 @@
+{#{% extends 'base.html' %}#}
+{#{% block title %}公开课列表 - 慕学在线网{% endblock %}#}
+{#{% load static %}#}
+{#{% block custom_bread %}#}
+{#    <section>#}
+{#        <div class="wp">#}
+{#            <ul  class="crumbs">#}
+{#                <li><a href="/">首页</a>></li>#}
+{#                <li>公开课</li>#}
+{#            </ul>#}
+{#        </div>#}
+{#    </section>#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <section>#}
+{#	<div class="wp">#}
+{#		<div class="list" style="margin-top:0;">#}
+{#			<div class="left layout">#}
+{#				<div class="head">#}
+{#					<ul class="tab_header">#}
+{#						<li {% if sort == '' %}class="active"{% endif %}><a href="?sort=">最新 </a></li>#}
+{#						<li {% if sort == 'hot' %}class="active"{% endif %}><a href="?sort=hot">最热门</a></li>#}
+{#						<li {% if sort == 'students' %}class="active"{% endif %}><a href="?sort=students">参与人数</a></li>#}
+{#					</ul>#}
+{#				</div>#}
+{#                <div id="inWindow">#}
+{#                    <div class="tab_cont " id="content">#}
+{#					<div class="group_list">#}
+{#                        {% for course in all_courses.object_list %}#}
+{#                            <div class="box">#}
+{#                                <a href="{% url 'course:course_detail' course.id %}">#}
+{#                                    <img width="280" height="350" class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}"/>#}
+{#                                </a>#}
+{#                                <div class="des">#}
+{#                                    <a href="{% url 'course:course_detail' course.id %}">#}
+{#                                        <h2>{{ course.name }}</h2>#}
+{#                                    </a>#}
+{#                                    <span class="fl">时长：<i class="key">{{ course.learn_times }}</i></span>#}
+{#                                    <span class="fr">学习人数：{{ course.students }}&nbsp;&nbsp;</span>#}
+{#                                </div>#}
+{#                                <div class="bottom">#}
+{#                                    <a href="{% url 'course:course_detail' course.id %}"><span class="fl">来自{{ course.course_org.name }}</span></a>#}
+{#                                    <span class="star fr  notlogin#}
+{#                                        " data-favid="15">#}
+{#                                        {{ course.fav_nums }}#}
+{#                                    </span>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endfor %}#}
+{##}
+{##}
+{#					</div>#}
+{#                    <div class="pageturn">#}
+{#                        <ul class="pagelist">#}
+{#                            {% if all_courses.has_previous %}#}
+{#                                <li class="long"><a href="?{{ all_courses.previous_page_number.querystring }}">上一页</a></li>#}
+{#                            {% endif %}#}
+{##}
+{#                            {% for page in all_courses.pages %}#}
+{#                                {% if page %}#}
+{#                                    {% if page == all_courses.number %}#}
+{#                                        <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>#}
+{#                                    {% else %}#}
+{#                                        <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>#}
+{#                                    {% endif %}#}
+{#                                {% else %}#}
+{#                                    <li class="none"><a href="">...</a></li>#}
+{#                                {% endif %}#}
+{#                            {% endfor %}#}
+{#                            {% if all_courses.has_next %}#}
+{#                                <li class="long"><a href="?{{ all_courses.next_page_number.querystring }}">下一页</a></li>#}
+{#                            {% endif %}#}
+{##}
+{#                        </ul>#}
+{#                    </div>#}
+{#				</div>#}
+{#                </div>#}
+{#			</div>#}
+{#			<div class="right layout">#}
+{#				<div class="head">热门课程推荐</div>#}
+{#				<div class="group_recommend">#}
+{#                    {% for hot_course in hot_courses %}#}
+{#                    <dl>#}
+{#						<dt>#}
+{#							<a target="_blank" href="{{ ecmall_ad.url }}">#}
+{#								<img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ hot_course.image }}"/>#}
+{#							</a>#}
+{#						</dt>#}
+{#						<dd>#}
+{#							<a target="_blank" href="{{ ecmall_ad.url }}"><h2> {{ hot_course.name }}</h2></a>#}
+{#							<span class="fl">难度：<i class="key">{{ hot_course.get_degree_display }}</i></span>#}
+{#						</dd>#}
+{#					</dl>#}
+{#                    {% endfor %}#}
+{##}
+{##}
+{#				</div>#}
+{#			</div>#}
+{#		</div>#}
+{#	</div>#}
+{#</section>#}
+{#{% endblock %}#}
+{##}
+
+
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}公开课程列表 - 知行在线{% endblock %}
+
+{% block nav_course %}active{% endblock %}
+
+<!-- 引入公开课程页专属 CSS -->
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/course-list.css' %}">
+{% endblock %}
+
+<!-- 顶部面包屑 -->
+{% block custom_bread %}
+<div class="breadcrumb-box">
+    <div class="breadcrumb-container">
+        <a href="{% url 'index' %}">首页</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">公开课程</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- 1. 多维度条件筛选区 -->
+<section class="filter-panel">
+    <!-- 课程方向/分类筛选 -->
+    <div class="filter-row">
+        <div class="filter-label">课程方向：</div>
+        <div class="filter-options">
+            <a href="?category=&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if not category %}active{% endif %}">全部</a>
+            <a href="?category=backend&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == 'backend' %}active{% endif %}">后端开发</a>
+            <a href="?category=frontend&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == 'frontend' %}active{% endif %}">前端开发</a>
+            <a href="?category=ai&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == 'ai' %}active{% endif %}">人工智能</a>
+            <a href="?category=mobile&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == 'mobile' %}active{% endif %}">移动开发</a>
+            <a href="?category=db&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == 'db' %}active{% endif %}">数据库</a>
+        </div>
+    </div>
+
+    <!-- 难度等级筛选 -->
+    <div class="filter-row">
+        <div class="filter-label">难度等级：</div>
+        <div class="filter-options">
+            <a href="?degree=&category={{ category }}&sort={{ sort }}" class="filter-item {% if not degree %}active{% endif %}">全部</a>
+            <a href="?degree=cj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'cj' %}active{% endif %}">初级</a>
+            <a href="?degree=zj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'zj' %}active{% endif %}">中级</a>
+            <a href="?degree=gj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'gj' %}active{% endif %}">高级</a>
+        </div>
+    </div>
+</section>
+
+<!-- 2. 主体内容布局（左侧课程网格 + 右侧推荐） -->
+<div class="course-main-layout">
+    <!-- 左侧列表区 -->
+    <main>
+        <!-- 排序控制条 -->
+        <div class="sort-bar">
+            <div class="sort-tabs">
+                <a href="?sort=&category={{ category }}&degree={{ degree }}" class="sort-tab {% if not sort %}active{% endif %}">最新</a>
+                <a href="?sort=hot&category={{ category }}&degree={{ degree }}" class="sort-tab {% if sort == 'hot' %}active{% endif %}">最热门</a>
+                <a href="?sort=students&category={{ category }}&degree={{ degree }}" class="sort-tab {% if sort == 'students' %}active{% endif %}">参与人数</a>
+            </div>
+            <div class="sort-total">
+                共找到 <b>{{ all_courses.paginator.count|default:all_courses|length }}</b> 门课程
+            </div>
+        </div>
+
+        <!-- 课程网格 -->
+        <div class="course-grid">
+            {% for course in all_courses.object_list|default:all_courses %}
+            <div class="course-card">
+                <div class="course-cover">
+                    {% if course.image %}
+                        <img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}">
+                    {% else %}
+                        <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:13px;">暂无封面图</div>
+                    {% endif %}
+
+                    {% if course.degree == 'cj' %}
+                        <span class="badge-level level-cj">初级</span>
+                    {% elif course.degree == 'zj' %}
+                        <span class="badge-level level-zj">中级</span>
+                    {% else %}
+                        <span class="badge-level level-gj">高级</span>
+                    {% endif %}
+                </div>
+
+                <div class="course-info">
+                    <div class="course-title">{{ course.name }}</div>
+                    <div class="course-meta">
+                        <span>⏱️ {{ course.learn_times }} 分钟</span>
+                        <span>👨‍🎓 {{ course.students|default:0 }} 人在学</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: span 3; text-align: center; color: var(--text-muted); background:#fff; padding: 50px 0; border-radius:12px; border:1px solid #e2e8f0;">
+                <p style="font-size: 16px; margin-bottom: 8px;">未找到符合条件的课程</p>
+                <span style="font-size: 13px;">请尝试切换筛选条件或清除搜索关键字</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 分页控件 -->
+        {% if all_courses.has_other_pages %}
+        <div class="pagination-wrap">
+            <ul class="pagination">
+                {% if all_courses.has_previous %}
+                    <li><a href="?page={{ all_courses.previous_page_number }}&category={{ category }}&degree={{ degree }}&sort={{ sort }}">‹</a></li>
+                {% else %}
+                    <li class="disabled"><span>‹</span></li>
+                {% endif %}
+
+                {% for page_num in all_courses.paginator.page_range %}
+                    {% if all_courses.number == page_num %}
+                        <li class="active"><span>{{ page_num }}</span></li>
+                    {% else %}
+                        <li><a href="?page={{ page_num }}&category={{ category }}&degree={{ degree }}&sort={{ sort }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if all_courses.has_next %}
+                    <li><a href="?page={{ all_courses.next_page_number }}&category={{ category }}&degree={{ degree }}&sort={{ sort }}">›</a></li>
+                {% else %}
+                    <li class="disabled"><span>›</span></li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- 右侧侧边栏 -->
+    <aside>
+        <!-- 热门推荐卡片 -->
+        <div class="sidebar-card">
+            <div class="sidebar-header">
+                <span>🔥 热门课程推荐</span>
+            </div>
+            <div>
+                {% for hot_course in hot_courses %}
+                <a href="#" class="hot-course-item">
+                    <div class="hot-thumb">
+                        {% if hot_course.image %}
+                            <img src="{{ MEDIA_URL }}{{ hot_course.image }}" alt="{{ hot_course.name }}">
+                        {% else %}
+                            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:11px;">无图</div>
+                        {% endif %}
+                    </div>
+                    <div class="hot-detail">
+                        <div class="hot-title">{{ hot_course.name }}</div>
+                        <div class="hot-sub">{{ hot_course.students|default:0 }} 人正在学习</div>
+                    </div>
+                </a>
+                {% empty %}
+                <div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px 0;">
+                    暂无热门推荐
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 学习提示小卡片 -->
+        <div class="sidebar-card" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff;">
+            <div style="font-weight: 700; font-size: 15px; margin-bottom: 8px;">💡 知行学习指南</div>
+            <p style="font-size: 12px; opacity: 0.9; line-height: 1.5; margin: 0;">
+                建议结合项目源码边学边练，知行合一才能快速吸收知识！
+            </p>
+        </div>
+    </aside>
+</div>
+{% endblock %}
+
+<!-- 引入公开课程页专属 JS -->
+{% block custom_js %}
+    <script src="{% static 'js/course-list.js' %}"></script>
+{% endblock %}

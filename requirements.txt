@@ -1,0 +1,7 @@
+Django==6.0.0
+django-simple-captcha
+django-pure-pagination
+django-ranged-response
+django-jazzmin
+mysqlclient
+Pillow

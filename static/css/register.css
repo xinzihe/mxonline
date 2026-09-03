@@ -1,0 +1,33 @@
+/* Specific overrides for Register Captcha Area */
+.glass-card .form-box form .captcha-group .captcha-box {
+    display: flex !important;
+    align-items: center;
+    margin-top: 8px;
+    gap: 15px; /* 输入框和图片的间距 */
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* 强制缩短验证码输入框并视觉靠左 */
+.glass-card .form-box form .captcha-group .captcha-box input {
+    width: 130px !important; /* 强制特定短宽度 */
+    flex-grow: 0 !important; /* 防止撑满 */
+    margin: 0 !important; /* 清除外部 login.css 可能影响的 margin */
+    order: 1 !important; /* 视觉顺序：1（靠左） */
+}
+
+/* ✅ 强制放大验证码图片并视觉靠右 */
+.glass-card .form-box form .captcha-group .captcha-box img {
+    height: 48px !important; /* ✅ 显著放大高度以提高清晰度 */
+    width: auto !important; /* 宽度根据高度等比自动 */
+    margin: 0 !important; /* 清除外部 login.css 影响 */
+    order: 2 !important; /* 视觉顺序：2（靠右） */
+    cursor: pointer;
+    border-radius: 6px;
+    vertical-align: middle;
+}
+
+/* 修正非验证码输入框的通用底部间距，保持对齐 */
+.glass-card .form-box form .form-group:not(.captcha-group) input {
+    margin-bottom: 18px;
+}

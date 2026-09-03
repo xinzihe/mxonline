@@ -1,0 +1,362 @@
+{#{% extends 'base.html' %}#}
+{#{% block title %}{{ video.name }} - 慕学在线网{% endblock %}#}
+{#{% load static %}#}
+{##}
+{#{% block custom_css %}#}
+{#    <link rel="stylesheet" href="{% static 'css/muke/base.css' %}"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/muke/common-less.css' %}"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/muke/course/learn-less.css' %}"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/aui.css' %}"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/mooc.css' %}"/>#}
+{#    <link rel="stylesheet" href="{% static 'css/muke/course/common-less.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'css/video-js.min.css' %}">#}
+{#    <style>#}
+{#        .video-js .vjs-big-play-button {#}
+{#            top: 50%;#}
+{#            left: 50%;#}
+{#        }#}
+{#    </style>#}
+{#{% endblock %}#}
+{##}
+{#{% block custom_js %}#}
+{#    <script src="{% static 'js/video.min.js' %}"></script>#}
+{#{% endblock %}#}
+{##}
+{#{% block custom_bread %}#}
+{#    <section>#}
+{#        <div class="wp">#}
+{#            <ul class="crumbs">#}
+{#                <li><a href="{% url 'index' %}">首页</a>></li>#}
+{#                <li><a href="{% url 'courses:course_list' %}">公开课程</a> ></li>#}
+{#                <li><a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a> ></li>#}
+{#                <li>{{ video.name }}</li>#}
+{#            </ul>#}
+{#        </div>#}
+{#    </section>#}
+{#{% endblock %}#}
+{##}
+{#{% block custom_content %}#}
+{#    <div id="main">#}
+{##}
+{#        <!-- ✅ 修正：移除大边距，改为居中自适应容器，宽度与下方内容对齐(1200px) -->#}
+{#        <div style="width: 1200px; margin: 20px auto; background-color: #000;">#}
+{#            <!-- style="width: 100%; height: 500px;" 让 Video.js 自动填充外层容器 -->#}
+{#            <video id="example_video_1"#}
+{#                   class="video-js vjs-default-skin vjs-big-play-centered"#}
+{#                   controls#}
+{#                   preload="auto"#}
+{#                   style="width: 100%; height: 500px;"#}
+{#                   data-setup="{}">#}
+{#                <!-- ✅ 修正：补全 {{ MEDIA_URL }} 媒体路径 -->#}
+{#                <source src="{{ MEDIA_URL }}{{ video.url }}" type='video/mp4'>#}
+{#                <p class="vjs-no-js">您的浏览器不支持 HTML5 video 标签。</p>#}
+{#            </video>#}
+{#        </div>#}
+{##}
+{#        <div class="course-info-main clearfix w has-progress">#}
+{##}
+{#            <div class="info-bar clearfix">#}
+{#                <div class="content-wrap clearfix">#}
+{#                    <div class="content">#}
+{#                        <div class="mod-tab-menu">#}
+{#                            <ul class="course-menu clearfix">#}
+{#                                <li><a class="ui-tabs-active active" id="learnOn"#}
+{#                                       href="{% url 'courses:course_info' course.id %}"><span>章节</span></a></li>#}
+{#                                <li><a id="commentOn" class=""#}
+{#                                       href="{% url 'courses:course_comment' course.id %}"><span>评论</span></a></li>#}
+{#                            </ul>#}
+{#                        </div>#}
+{#                        <div id="notice" class="clearfix">#}
+{#                            <div class="l"><strong>课程公告:</strong> <a href="javascript:void(0)">Spring的文档以及相关的jar文件已上传</a>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="mod-chapters">#}
+{#     章节信息       #}
+{#                            {% for lesson in course.get_course_lesson %}#}
+{#                                <div class="chapter chapter-active">#}
+{#                                    <h3>#}
+{#                                        <strong><i class="state-expand"></i>{{ lesson.name }}</strong>#}
+{#                                    </h3>#}
+{#                                    <ul class="video">#}
+{#                                        {% for video in lesson.get_lesson_video %}#}
+{#                                            <li>#}
+{#                                                <a target="_blank" href='{% url 'courses:video_play' video.id %}'#}
+{#                                                   class="J-media-item studyvideo">#}
+{#                                                    {{ video.name }}&nbsp;（{{ video.learn_times }}）#}
+{#                                                    <i class="study-state"></i>#}
+{#                                                </a>#}
+{#                                            </li>#}
+{#                                        {% endfor %}#}
+{#                                    </ul>#}
+{#                                </div>#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="aside r">#}
+{#                        <div class="bd">#}
+{##}
+{#                            <div class="box mb40">#}
+{#                                <h4>资料下载</h4>#}
+{#  资料下载   #}
+{#                                <ul class="downlist">#}
+{#                                    {% for course_resource in all_resources %}#}
+{#                                        <li>#}
+{#                                            <span><i#}
+{#                                                    class="aui-iconfont aui-icon-file"></i>{{ course_resource.name }}</span>#}
+{#                                            <a href="{{ MEDIA_URL }}{{ course_resource.download }}" class="downcode"#}
+{#                                               target="_blank">下载</a>#}
+{#                                        </li>#}
+{#                                    {% endfor %}#}
+{#                                </ul>#}
+{#                            </div>#}
+{#                            <div class="box mb40">#}
+{#                                <h4>讲师提示</h4>#}
+{#                                <div class="teacher-info">#}
+{#                                    <a href="/u/315464/courses?sort=publish" target="_blank">#}
+{#                                        <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' width='80' height='80'/>#}
+{#                                    </a>#}
+{#                                    <span class="tit">#}
+{#                  <a href="/u/315464/courses?sort=publish" target="_blank">{{ course.teacher.name }}</a>#}
+{#                </span>#}
+{#                                    <span class="job">{{ course.teacher.work_position }}</span>#}
+{#                                </div>#}
+{#                                <div class="course-info-tip">#}
+{#                                    <dl class="first">#}
+{#                                        <dt>课程须知</dt>#}
+{#                                        <dd class="autowrap">{{ course.youneed_konw }}</dd>#}
+{#                                    </dl>#}
+{#                                    <dl>#}
+{#                                        <dt>老师告诉你能学到什么？</dt>#}
+{#                                        <dd class="autowrap">{{ course.teacher_tell }}</dd>#}
+{#                                    </dl>#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{##}
+{#                            <div class="cp-other-learned  js-comp-tabs">#}
+{#                                <div class="cp-header clearfix">#}
+{#                                    <h2 class="cp-tit l">该课的同学还学过</h2>#}
+{#                                </div>#}
+{#                                <div class="cp-body">#}
+{#                                    <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="course"#}
+{#                                         style="display: block">#}
+{#                                        <!-- 学过其他的课程循环 -->#}
+{#                                        <ul class="other-list">#}
+{#                                            {% for relate_course in relate_courses %}#}
+{#                                                <li class="curr">#}
+{#                                                    <a href="{% url 'courses:course_detail' relate_course.id %}"#}
+{#                                                       target="_blank">#}
+{#                                                        <img src="{{ MEDIA_URL }}{{ relate_course.image }}"#}
+{#                                                             alt="{{ relate_course.name }}"/>#}
+{#                                                        <span class="name autowrap">{{ relate_course.name }}</span>#}
+{#                                                    </a>#}
+{#                                                </li>#}
+{#                                            {% endfor %}#}
+{##}
+{#                                        </ul>#}
+{#                                    </div>#}
+{#                                    <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="plan">#}
+{#                                        <ul class="other-list">#}
+{#                                            <li class="curr">#}
+{#                                                <a href="/course/programdetail/pid/31?src=sug" target="_blank">#}
+{#                                                    <img src="http://img.mukewang.com/56551e6700018b0c09600720-240-135.jpg"#}
+{#                                                         alt="Java工程师">#}
+{#                                                    <span class="name autowrap">Java工程师</span>#}
+{#                                                </a>#}
+{#                                            </li>#}
+{#                                        </ul>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                <div class="clear"></div>#}
+{##}
+{#            </div>#}
+{##}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+{% extends 'base.html' %}
+{% block title %}{{ video.name }} - 慕学在线网{% endblock %}
+{% load static %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/muke/base.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/muke/common-less.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/muke/course/learn-less.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/aui.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/mooc.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/muke/course/common-less.css' %}">
+    <link rel="stylesheet" href="{% static 'css/video-js.min.css' %}">
+    <style>
+        /* 播放器容器固定高度 */
+        .video-container {
+            width: 1200px;
+            height: 500px;
+            margin: 20px auto;
+            background-color: #000;
+        }
+
+        /* 纠正播放按钮居中位置 */
+        .video-js .vjs-big-play-button {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{% static 'js/video.min.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // JS 手动安全初始化，避开 data-setup 冲突
+            var player = videojs('example_video_1', {
+                controls: true,
+                autoplay: false,
+                preload: 'auto'
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block custom_bread %}
+    <section>
+        <div class="wp">
+            <ul class="crumbs">
+                <li><a href="{% url 'index' %}">首页</a>></li>
+                <li><a href="{% url 'course:course_list' %}">公开课程</a> ></li>
+                <li><a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a> ></li>
+                <li>{{ video.name }}</li>
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <div id="main">
+
+        <!-- 播放器包裹外层容器 -->
+        <div class="video-container">
+            <!-- 移除内联 height:500px 与 data-setup，添加移动端兼容属性 -->
+            <video id="example_video_1"
+                   class="video-js vjs-default-skin vjs-big-play-centered"
+                   controls
+                   preload="auto"
+                   playsinline
+                   webkit-playsinline
+                   style="width: 100%; height: 100%;">
+                <source src="{{ MEDIA_URL }}{{ video.url }}" type='video/mp4'>
+                <p class="vjs-no-js">您的浏览器不支持 HTML5 video 标签。</p>
+            </video>
+        </div>
+
+        <div class="course-info-main clearfix w has-progress">
+            <div class="info-bar clearfix">
+                <div class="content-wrap clearfix">
+                    <div class="content">
+                        <div class="mod-tab-menu">
+                            <ul class="course-menu clearfix">
+                                <li><a class="ui-tabs-active active" id="learnOn"
+                                       href="{% url 'course:course_info' course.id %}"><span>章节</span></a></li>
+                                <li><a id="commentOn" class=""
+                                       href="{% url 'course:course_comments' course.id %}"><span>评论</span></a></li>
+                            </ul>
+                        </div>
+
+
+                        <div class="mod-chapters">
+                            {% for lesson in course.get_course_lesson %}
+                                <div class="chapter chapter-active">
+                                    <h3>
+                                        <strong><i class="state-expand"></i>{{ lesson.name }}</strong>
+                                    </h3>
+                                    <ul class="video">
+                                        {% for video in lesson.get_lesson_video %}
+                                            <li>
+                                                <a target="_blank" href='{% url 'course:video_play' video.id %}'
+                                                   class="J-media-item studyvideo">
+                                                    {{ video.name }}&nbsp;（{{ video.learn_times }}）
+                                                    <i class="study-state"></i>
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="aside r">
+                        <div class="bd">
+                            <div class="box mb40">
+                                <h4>资料下载</h4>
+                                <ul class="downlist">
+                                    {% for course_resource in all_resources %}
+                                        <li>
+                                            <span><i
+                                                    class="aui-iconfont aui-icon-file"></i>{{ course_resource.name }}</span>
+                                            <a href="{{ MEDIA_URL }}{{ course_resource.download }}" class="downcode"
+                                               target="_blank">下载</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="box mb40">
+                                <h4>讲师提示</h4>
+                                <div class="teacher-info">
+                                    <a href="/u/315464/courses?sort=publish" target="_blank">
+                                        <img src='{{ MEDIA_URL }}{{ course.teacher.image }}' width='80' height='80'/>
+                                    </a>
+                                    <span class="tit">
+                                      <a href="/u/315464/courses?sort=publish"
+                                         target="_blank">{{ course.teacher.name }}</a>
+                                    </span>
+                                    <span class="job">{{ course.teacher.work_position }}</span>
+                                </div>
+                                <div class="course-info-tip">
+                                    <dl class="first">
+                                        <dt>课程须知</dt>
+                                        <dd class="autowrap">{{ course.youneed_konw }}</dd>
+                                    </dl>
+                                    <dl>
+                                        <dt>老师告诉你能学到什么？</dt>
+                                        <dd class="autowrap">{{ course.teacher_tell }}</dd>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <div class="cp-other-learned js-comp-tabs">
+                                <div class="cp-header clearfix">
+                                    <h2 class="cp-tit l">该课的同学还学过</h2>
+                                </div>
+                                <div class="cp-body">
+                                    <div class="cp-tab-pannel js-comp-tab-pannel" data-pannel="course"
+                                         style="display: block">
+                                        <ul class="other-list">
+                                            {% for relate_course in relate_courses %}
+                                                <li class="curr">
+                                                    <a href="{% url 'course:course_detail' relate_course.id %}"
+                                                       target="_blank">
+                                                        <img src="{{ MEDIA_URL }}{{ relate_course.image }}"
+                                                             alt="{{ relate_course.name }}"/>
+                                                        <span class="name autowrap">{{ relate_course.name }}</span>
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

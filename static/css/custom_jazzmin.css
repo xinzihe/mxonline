@@ -1,0 +1,7 @@
+/* 限制登录页 Logo 尺寸并居中 */
+.login-box .login-logo img {
+    max-height: 90px !important;
+    width: auto !important;
+    object-fit: contain;
+    margin: 0 auto;
+}

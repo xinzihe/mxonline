@@ -1,0 +1,288 @@
+{#{% extends 'base.html' %}#}
+{#{% block title %}课程机构列表 - 慕学在线网{% endblock %}#}
+{#{% load static %}#}
+{#{% block custom_bread %}#}
+{#{% endblock %}#}
+{##}
+{#{% block custom_js %}#}
+{#    <script type="text/javascript" src="/static/js/index.js"></script>#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <div class="banner">#}
+{#			<div class="wp">#}
+{#				<div class="fl">#}
+{#					<div class="imgslide">#}
+{#						<ul class="imgs">#}
+{#                            {% for banner in all_banners %}#}
+{#                            <li>#}
+{#                                    <a href="{{ banner.url }}">#}
+{#                                        <img width="1200" height="478" src="{{ MEDIA_URL }}{{ banner.image }}" />#}
+{#                                    </a>#}
+{#                                </li>#}
+{#                            {% endfor %}#}
+{##}
+{#						</ul>#}
+{#					</div>#}
+{#					<div class="unslider-arrow prev"></div>#}
+{#					<div class="unslider-arrow next"></div>#}
+{#				</div>#}
+{##}
+{#				</div>#}
+{##}
+{##}
+{#			</div>#}
+{#<!--banner end-->#}
+{#<!--feature start-->#}
+{#	<section>#}
+{#		<div class="wp">#}
+{#			<ul class="feature">#}
+{#				<li class="feature1">#}
+{#					<img class="pic" src="/static/images/feature1.png"/>#}
+{#					<p class="center">专业权威</p>#}
+{#				</li>#}
+{#				<li class="feature2">#}
+{#					<img class="pic" src="/static/images/feature2.png"/>#}
+{#					<p class="center">课程最新</p>#}
+{#				</li>#}
+{#				<li class="feature3">#}
+{#					<img class="pic" src="/static/images/feature3.png"/>#}
+{#					<p class="center">名师授课</p>#}
+{#				</li>#}
+{#				<li class="feature4">#}
+{#					<img class="pic" src="/static/images/feature4.png"/>#}
+{#					<p class="center">数据真实</p>#}
+{#				</li>#}
+{#			</ul>#}
+{#		</div>#}
+{#	</section>#}
+{#<!--feature end-->#}
+{#<!--module1 start-->#}
+{#	<section>#}
+{#		<div class="module">#}
+{#			<div class="wp">#}
+{#				<h1>公开课程</h1>#}
+{#				<div class="module1 eachmod">#}
+{#					<div class="module1_1 left">#}
+{#						<img width="228" height="614" src="/static/images/module1_1.jpg"/>#}
+{#						<p class="fisrt_word">名师授课<br/>专业权威</p>#}
+{#						<a class="more" href="{% url 'course:course_list' %}">查看更多课程 ></a>#}
+{#					</div>#}
+{#					<div class="right group_list">#}
+{#						<div class="module1_2 box">#}
+{#							<div class="imgslide2">#}
+{#								<ul class="imgs">#}
+{#                                    {% for banner_course in banner_courses %}#}
+{#                                    <li>#}
+{#                                        <a href="{% url 'course:course_detail' banner_course.id %}">#}
+{#                                            <img width="470" height="300" src="{{ MEDIA_URL }}{{ banner_course.image }}" />#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    {% endfor %}#}
+{#								</ul>#}
+{#							</div>#}
+{#							<div class="unslider-arrow2 prev"></div>#}
+{#							<div class="unslider-arrow2 next"></div>#}
+{#						</div>#}
+{#                            {% for course in courses %}#}
+{#                            <div class="module1_{{ forloop.counter|add:2 }} box">#}
+{#                                <a href="{% url 'course:course_detail' course.id %}">#}
+{#                                    <img width="233" height="190" src="{{ MEDIA_URL }}{{ course.image }}"/>#}
+{#                                </a>#}
+{#                                <div class="des">#}
+{#                                    <a href="{% url 'course:course_detail' course.id %}">#}
+{#                                        <h2 title="{{ course.name }}">{{ course.name }}</h2>#}
+{#                                    </a>#}
+{#                                    <span class="fl">难度：<i class="key">{{ course.get_degree_display }}</i></span>#}
+{#                                    <span class="fr">学习人数：{{ course.students }}</span>#}
+{#                                </div>#}
+{#                                <div class="bottom">#}
+{#                                    <span class="fl" title="{{ course.course_org.name }}">{{ course.course_org.name }}</span>#}
+{#                                    <span class="star fr">{{ course.fav_nums }}</span>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            {% endfor %}#}
+{#					</div>#}
+{#				</div>#}
+{#			</div>#}
+{#		</div>#}
+{#	</section>#}
+{#	<section>#}
+{#		<div class="module greybg">#}
+{#			<div class="wp">#}
+{#				<h1>课程机构</h1>#}
+{#				<div class="module3 eachmod">#}
+{#					<div class="module3_1 left">#}
+{#						<img width="228" height="463" src="/static/images/module3_1.jpg"/>#}
+{#						<p class="fisrt_word">名校来袭<br/>权威认证</p>#}
+{#						<a class="more" href="{% url 'org:org_list' %}">查看更多机构 ></a>#}
+{#					</div>#}
+{#					<div class="right">#}
+{#						<ul>#}
+{#                            {% for org in course_orgs %}#}
+{#                                <li class="{% if forloop.counter|divisibleby:5 %}five{% endif %}">#}
+{#                                    <a href="{% url 'org:org_home' org.id %}">#}
+{#                                        <div class="company">#}
+{#                                            <img width="184" height="100" src="{{ MEDIA_URL }}{{ org.image }}"/>#}
+{#                                            <div class="score">#}
+{#                                                <div class="circle">#}
+{#                                                    <h2>{{ org.tag }}</h2>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <p><span class="key" title="{{ org.name }}">{{ org.name }}</span></p>#}
+{#                                    </a>#}
+{#                                </li>#}
+{#                            {% endfor %}#}
+{#						</ul>#}
+{#					</div>#}
+{#				</div>#}
+{#			</div>#}
+{#		</div>#}
+{#	</section>#}
+{#{% endblock %}#}
+{##}
+{##}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - 知行在线{% endblock %}
+
+{% block nav_index %}active{% endblock %}
+
+{% block custom_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 1. Hero 模块 (三栏现代结构) -->
+<div class="hero-wrapper">
+    <!-- 左侧课程分类菜单 -->
+    <div class="category-menu">
+        <a href="#" class="category-item">
+            后端开发 <span>Python / Java ›</span>
+        </a>
+        <a href="#" class="category-item">
+            前端开发 <span>Vue / React ›</span>
+        </a>
+        <a href="#" class="category-item">
+            移动开发 <span>Android / iOS ›</span>
+        </a>
+        <a href="#" class="category-item">
+            人工智能 <span>Machine Learning ›</span>
+        </a>
+        <a href="#" class="category-item">
+            云计算 & 运维 <span>Docker / K8s ›</span>
+        </a>
+        <a href="#" class="category-item">
+            数据库 <span>MySQL / Redis ›</span>
+        </a>
+    </div>
+
+    <!-- 中间 Banner 展示区域 -->
+    <div class="main-banner">
+        <span class="banner-tag">精选课程推荐</span>
+        <h1>知行合一，笃行致远<br/>构建属于你的技术知识体系</h1>
+        <p>项目实战导向，全方位提升实战开发能力。</p>
+        <a href="#" class="btn-hero">开始学习 →</a>
+    </div>
+
+    <!-- 右侧平台概览卡片 -->
+    <div class="quick-panel">
+        <div class="panel-title">平台概览</div>
+        <div class="stat-item">
+            <div class="stat-icon">📚</div>
+            <div class="stat-info">
+                <div class="num">120+</div>
+                <div class="label">在线优质课程</div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">🏫</div>
+            <div class="stat-info">
+                <div class="num">15</div>
+                <div class="label">合作知名机构</div>
+            </div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-icon">👨‍🎓</div>
+            <div class="stat-info">
+                <div class="num">15,000+</div>
+                <div class="label">累计学习学员</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. 平台保障特性栏 -->
+<div class="features-bar">
+    <div class="feature-item">
+        <span style="font-size:24px;">🚀</span>
+        <div>
+            <div class="feature-title">前沿技术</div>
+            <div class="feature-desc">紧跟业界主流技术栈</div>
+        </div>
+    </div>
+    <div class="feature-item">
+        <span style="font-size:24px;">💻</span>
+        <div>
+            <div class="feature-title">实战驱动</div>
+            <div class="feature-desc">商业级项目全流程演练</div>
+        </div>
+    </div>
+    <div class="feature-item">
+        <span style="font-size:24px;">🎯</span>
+        <div>
+            <div class="feature-title">名师把关</div>
+            <div class="feature-desc">资深技术专家倾囊相授</div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. 公开课推荐展示 -->
+<section>
+    <div class="section-title">
+        <h2>公开课推荐</h2>
+        <a href="#">查看全部课程 →</a>
+    </div>
+
+    <div class="grid-container">
+        {% for course in courses %}
+        <div class="card">
+            <div class="card-cover">
+                {% if course.image %}
+                    <img src="{{ MEDIA_URL }}{{ course.image }}" class="card-img" alt="{{ course.name }}">
+                {% else %}
+                    <div class="card-img" style="display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;">暂无封面</div>
+                {% endif %}
+
+                <!-- 难度彩色标签 -->
+                {% if course.degree == 'cj' %}
+                    <span class="badge-degree degree-cj">初级</span>
+                {% elif course.degree == 'zj' %}
+                    <span class="badge-degree degree-zj">中级</span>
+                {% else %}
+                    <span class="badge-degree degree-gj">高级</span>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <div class="card-title">{{ course.name }}</div>
+                <div class="card-footer">
+                    <span class="card-tag">{{ course.category|default:"IT技术" }}</span>
+                    <span>⏱️ {{ course.learn_times }} 分钟</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: span 4; text-align: center; color: var(--text-muted); background:#fff; padding: 40px; border-radius:12px; border:1px solid #e2e8f0;">
+            暂无推荐课程，请进入 Django 后台添加课程数据。
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{% static 'js/index.js' %}"></script>
+{% endblock %}

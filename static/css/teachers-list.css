@@ -1,0 +1,376 @@
+/* ==================== 1. 面包屑导航 ==================== */
+.breadcrumb-box {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 0;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+.breadcrumb-container {
+    width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.breadcrumb-container a {
+    color: #64748b;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.breadcrumb-container a:hover { color: var(--primary-color); }
+.breadcrumb-separator { color: #cbd5e1; }
+.breadcrumb-current { color: #0f172a; font-weight: 500; }
+
+/* ==================== 2. 主体双栏布局 ==================== */
+.teacher-main-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* 排序控制栏 */
+.sort-bar {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.sort-tabs {
+    display: flex;
+    gap: 20px;
+}
+.sort-tab {
+    font-size: 14px;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding-bottom: 2px;
+}
+.sort-tab:hover, .sort-tab.active { color: var(--primary-color); }
+.sort-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-color);
+}
+.sort-total {
+    font-size: 13px;
+    color: #64748b;
+}
+.sort-total b { color: var(--primary-color); }
+
+/* 讲师卡片列表 */
+.teacher-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.teacher-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.teacher-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.06);
+    border-color: #cbd5e1;
+}
+
+/* 头像与认证 */
+.teacher-avatar-wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+.teacher-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #f1f5f9;
+}
+.teacher-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    border: 3px solid #f1f5f9;
+}
+.badge-v {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: #22c55e;
+    color: #ffffff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border: 2px solid #ffffff;
+}
+
+/* 讲师核心信息 */
+.teacher-content {
+    flex: 1;
+}
+.teacher-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.teacher-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.teacher-name:hover { color: var(--primary-color); }
+.teacher-title-badge {
+    background: #f0f9ff;
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid #bae6fd;
+}
+
+.teacher-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+.teacher-meta span {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.teacher-intro {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.teacher-featured-course {
+    font-size: 12px;
+    color: #94a3b8;
+}
+.teacher-featured-course a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+.teacher-featured-course a:hover { text-decoration: underline; }
+
+/* 讲师右侧操作栏 */
+.teacher-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+    padding-left: 20px;
+    border-left: 1px solid #f1f5f9;
+}
+.btn-teacher-detail {
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 8px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.btn-teacher-detail:hover { background: var(--primary-hover); }
+
+.btn-teacher-fav {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 6px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.btn-teacher-fav:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* 分页控件 */
+.pagination-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+.pagination {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+}
+.pagination a, .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.pagination a:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f0f9ff;
+}
+.pagination .active span {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+.pagination .disabled span {
+    color: #cbd5e1;
+    cursor: not-allowed;
+    background: #f8fafc;
+}
+
+/* ==================== 3. 右侧侧边栏组件 ==================== */
+.sidebar-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+}
+.sidebar-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+/* 热门讲师榜单列表 */
+.rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+.rank-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.rank-num.top-1 { background: #fef3c7; color: #d97706; }
+.rank-num.top-2 { background: #e2e8f0; color: #475569; }
+.rank-num.top-3 { background: #ffedd5; color: #c2410c; }
+
+.rank-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f1f5f9;
+}
+
+.rank-info { flex: 1; }
+.rank-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+    transition: color 0.2s;
+}
+.rank-item:hover .rank-name { color: var(--primary-color); }
+.rank-sub {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+/* 讲师招募 Banner 卡片 */
+.recruit-card {
+    background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+}
+.recruit-card h3 { font-size: 18px; margin-bottom: 8px; font-weight: 700; }
+.recruit-card p { font-size: 12px; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5; }
+.btn-recruit {
+    display: inline-block;
+    background: #22c55e;
+    color: #ffffff;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+.btn-recruit:hover { opacity: 0.9; }

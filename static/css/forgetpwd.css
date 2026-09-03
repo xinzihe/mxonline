@@ -1,0 +1,33 @@
+/* Captcha Area Customization */
+.glass-card .form-box form .captcha-group .captcha-box {
+    display: flex !important;
+    align-items: center;
+    margin-top: 8px;
+    gap: 15px; /* 输入框与验证码图片的间距 */
+    width: 100%;
+    justify-content: flex-start;
+}
+
+/* 强制缩短验证码输入框并放置在左侧 */
+.glass-card .form-box form .captcha-group .captcha-box input {
+    width: 130px !important; /* 缩短宽度 */
+    flex-grow: 0 !important;
+    margin: 0 !important;
+    order: 1 !important; /* 视觉顺序：靠左 */
+}
+
+/* 强制放大验证码图片并放置在右侧 */
+.glass-card .form-box form .captcha-group .captcha-box img {
+    height: 48px !important; /* 显著放大高度 */
+    width: auto !important; /* 等比宽度 */
+    margin: 0 !important;
+    order: 2 !important; /* 视觉顺序：靠右 */
+    cursor: pointer;
+    border-radius: 6px;
+    vertical-align: middle;
+}
+
+/* 修正普通输入框的底部间距 */
+.glass-card .form-box form .form-group:not(.captcha-group) input {
+    margin-bottom: 18px;
+}

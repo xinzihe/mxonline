@@ -1,0 +1,38 @@
+<style>
+  /* 解决 Jazzmin / Admin 样式冲突及层级问题 */
+  .w-e-textarea-video-container, .w-e-text-container { z-index: 100 !important; }
+  .w-e-toolbar { z-index: 101 !important; border: 1px solid #ccc; }
+  .editor-wrapper { border: 1px solid #ccc; border-top: none; height: 400px; }
+</style>
+
+<div id="wang-editor-container-{{ widget.name }}">
+  <div id="wang-toolbar-{{ widget.name }}" class="w-e-toolbar"></div>
+  <div id="wang-text-{{ widget.name }}" class="editor-wrapper"></div>
+</div>
+
+<!-- 隐藏的隐藏域，用于和 Django 表单交互提交数据 -->
+<textarea name="{{ widget.name }}" id="id_{{ widget.name }}" style="display:none;">{{ widget.value|default:'' }}</textarea>
+
+<script>
+(function() {
+  const { createEditor, createToolbar } = window.wangEditor;
+  const textarea = document.getElementById('id_{{ widget.name }}');
+
+  const editor = createEditor({
+    selector: '#wang-text-{{ widget.name }}',
+    html: textarea.value,
+    config: {
+      placeholder: '请输入课程详情...',
+      onChange(editor) {
+        // 编辑器内容变动时实时写回 textarea
+        textarea.value = editor.getHtml();
+      }
+    }
+  });
+
+  createToolbar({
+    editor,
+    selector: '#wang-toolbar-{{ widget.name }}',
+  });
+})();
+</script>
