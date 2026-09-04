@@ -194,15 +194,16 @@
 <!-- 引入授课机构页专属 CSS -->
 {% block custom_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/org-list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/page-breadcrumb.css' %}">
 {% endblock %}
 
 <!-- 顶部面包屑 -->
 {% block custom_bread %}
-<div class="breadcrumb-box">
-    <div class="breadcrumb-container">
+<div class="page-breadcrumb">
+    <div class="page-breadcrumb-inner">
         <a href="{% url 'index' %}">首页</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">授课机构</span>
+        <span>/</span>
+        <span>授课机构</span>
     </div>
 </div>
 {% endblock %}

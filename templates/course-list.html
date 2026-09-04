@@ -115,15 +115,16 @@
 <!-- 引入公开课程页专属 CSS -->
 {% block custom_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/course-list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/page-breadcrumb.css' %}">
 {% endblock %}
 
 <!-- 顶部面包屑 -->
 {% block custom_bread %}
-<div class="breadcrumb-box">
-    <div class="breadcrumb-container">
+<div class="page-breadcrumb">
+    <div class="page-breadcrumb-inner">
         <a href="{% url 'index' %}">首页</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">公开课程</span>
+        <span>/</span>
+        <span>公开课程</span>
     </div>
 </div>
 {% endblock %}
