@@ -1,4 +1,5 @@
 {% extends 'usercenter-base.html' %}
+{% comment %}
 {% block title %}个人信息- 慕学在线网{% endblock %}
 
 {% block custom_bread %}
@@ -12,6 +13,87 @@
         </div>
     </section>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+{% block title %}个人资料 - 知行在线{% endblock %}
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/usercenter.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usercenter-info.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usercenter-dialog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/usercenter-password.css' %}">{% endblock %}
+{% block right_content %}
+    <section class="profile-page" data-profile-page data-profile-url="{% url 'users:user_info' %}"
+             data-password-url="{% url 'users:update_pwd' %}" data-email-code-url="{% url 'users:sendemail_code' %}"
+             data-email-url="{% url 'users:update_email' %}" data-avatar-url="{% url 'users:image_upload' %}">
+        <header class="profile-heading">
+            <div><p class="profile-eyebrow">账户设置</p>
+                <h1>个人资料</h1>
+                <p>更新资料，让学习记录更贴近你。</p></div>
+            <div class="profile-heading-actions"><span class="profile-status">账户已登录</span>
+                <form id="profile-avatar-form" enctype="multipart/form-data"><label class="profile-file-button"
+                                                                                    for="profile-avatar-input">更换头像</label><input
+                        id="profile-avatar-input" name="image" type="file" accept="image/*">
+                    <p class="profile-form-message" data-avatar-message></p></form>
+            </div>
+        </header>
+        <div class="profile-grid">
+            <div class="profile-content-card">
+                <header class="profile-card-heading"><h2>基本资料</h2>
+                    <p>用于展示你的个人学习身份。</p></header>
+                <form id="profile-info-form">
+                    <div class="profile-form-list"><label><span>昵称</span><input name="nick_name" maxlength="50"
+                                                                                  value="{{ request.user.nick_name }}"
+                                                                                  placeholder="请输入昵称"></label><label><span>手机号码</span><input
+                            name="mobile" maxlength="11" value="{{ request.user.mobile|default:'' }}"
+                            placeholder="请输入手机号"></label><label><span>绑定邮箱</span><input
+                            value="{{ request.user.email }}" readonly aria-label="绑定邮箱">
+                        <button class="profile-inline-link" type="button" data-open-dialog="email">修改邮箱</button>
+                    </label></div>
+                    <div class="profile-form-actions"><p class="profile-form-message" data-info-message></p>
+                        <button class="profile-primary-button" type="submit">保存资料</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="profile-security-grid">
+            <section>
+                <div><h2>登录密码</h2>
+                    <p>定期更新密码可以保护你的账户安全。</p></div>
+                <button class="profile-secondary-button" type="button" data-open-dialog="password">修改密码</button>
+            </section>
+        </div>
+        <dialog class="profile-dialog" data-dialog="password">
+            <form id="profile-password-form" method="dialog">
+                <header><div><h2>修改密码</h2><p class="profile-dialog-tip">请设置新密码，密码长度为 6–20 位字符。</p></div>
+                    <button type="button" data-close-dialog aria-label="关闭">×</button>
+                </header>
+                <label>新密码<input name="password1" type="password" minlength="6" maxlength="20"
+                                    placeholder="请输入6-20位字符" required></label><label>确认新密码<input name="password2" type="password"
+                                                                             minlength="6" maxlength="20" placeholder="请再次输入6-20位字符" required></label>
+                <p class="profile-form-message" data-password-message></p>
+                <button class="profile-primary-button" type="submit">确认修改</button>
+            </form>
+        </dialog>
+        <dialog class="profile-dialog" data-dialog="email">
+            <form id="profile-email-form" method="dialog">
+                <header><h2>修改邮箱</h2>
+                    <button type="button" data-close-dialog aria-label="关闭">×</button>
+                </header>
+                <label>新邮箱<input name="email" type="email" required></label>
+                <div class="profile-code-row"><label>验证码<input name="code" required></label>
+                    <button class="profile-secondary-button" type="button" data-send-email-code>获取验证码</button>
+                </div>
+                <p class="profile-form-message" data-email-message></p>
+                <button class="profile-primary-button" type="submit">确认绑定</button>
+            </form>
+        </dialog>
+    </section>
+{% endblock %}
+{% block custom_js %}
+    <script src="{% static 'js/usercenter-info.js' %}"></script>
+    <script src="{% static 'js/usercenter-password.js' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}
+{% comment %}
 
 {% block right_content %}
     <div class="right">
@@ -73,5 +155,6 @@
 		</div>
 	</div>
 {% endblock %}
+{% endcomment %}
 
 

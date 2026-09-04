@@ -1,11 +1,15 @@
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 
 
 # Create your models here.
 
 class UserProfile(AbstractUser):
+    # 数据库存的是密码哈希，长度规则针对用户输入的原始密码执行。
+    PASSWORD_MIN_LENGTH = 6
+    PASSWORD_MAX_LENGTH = 20
     nick_name = models.CharField(max_length=50, verbose_name="昵称", default="")
     birthday = models.DateField(verbose_name="生日", null=True, blank=True)
     sex = models.CharField(max_length=6, choices=(("male", "男"), ("female", "女")), default="male")
@@ -19,6 +23,14 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    @classmethod
+    def validate_raw_password(cls, password):
+        if not cls.PASSWORD_MIN_LENGTH <= len(password or '') <= cls.PASSWORD_MAX_LENGTH:
+            raise ValidationError(
+                f'密码长度必须为 {cls.PASSWORD_MIN_LENGTH}-{cls.PASSWORD_MAX_LENGTH} 位字符。',
+                code='invalid_password_length',
+            )
 
     def unread_nums(self):
         #获取用户未读消息的数量

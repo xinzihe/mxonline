@@ -1,0 +1,10 @@
+/* 收藏页统一的空状态：机构、讲师为单列，课程为双列网格。 */
+.uc-list > .uc-empty,
+.uc-course-grid > .uc-empty {
+    min-height: 210px;
+    align-content: center;
+}
+
+.uc-course-grid > .uc-empty {
+    grid-column: 1 / -1;
+}

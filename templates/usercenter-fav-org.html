@@ -1,4 +1,5 @@
 {% extends 'usercenter-base.html' %}
+{% comment %}
 {% block title %}我的收藏- 慕学在线网{% endblock %}
 {% load static %}
 {% block custom_bread %}
@@ -58,6 +59,12 @@
             </div>
         </div>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+{% block title %}我的收藏 - 知行在线{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{% static 'css/usercenter.css' %}"><link rel="stylesheet" href="{% static 'css/usercenter-pages.css' %}"><link rel="stylesheet" href="{% static 'css/usercenter-empty.css' %}">{% endblock %}
+{% block right_content %}<section class="uc-page"><header class="uc-page-heading"><div><p>收藏中心</p><h1>我的收藏</h1><span>保存值得反复学习和关注的内容。</span></div></header><nav class="uc-tabs"><a class="active" href="{% url 'users:myfav_org' %}">课程机构</a><a href="{% url 'users:myfav_teacher' %}">授课讲师</a><a href="{% url 'users:myfav_course' %}">公开课程</a></nav><div class="uc-list">{% for org in org_list %}<article class="uc-list-item"><a href="{% url 'org:org_home' org.id %}">{% if org.image %}<img src="{{ MEDIA_URL }}{{ org.image }}" alt="{{ org.name }}">{% endif %}</a><div><h2><a href="{% url 'org:org_home' org.id %}">{{ org.name }}</a></h2><p>{{ org.address }} · {{ org.get_teacher_nums }} 位讲师</p><span>{{ org.desc|truncatechars:80 }}</span></div><button class="uc-remove" data-favorite data-fav-id="{{ org.id }}" data-fav-type="2">取消收藏</button></article>{% empty %}<div class="uc-empty"><strong>暂无收藏机构</strong><a href="{% url 'org:org_list' %}">浏览机构</a></div>{% endfor %}</div></section>{% endblock %}{% block custom_js %}<script src="{% static 'js/favorite.js' %}" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}
 
 
 

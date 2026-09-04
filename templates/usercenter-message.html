@@ -1,4 +1,5 @@
 {% extends 'usercenter-base.html' %}
+{% comment %}
 {% block title %}我的消息- 慕学在线网{% endblock %}
 {% load static %}
 {% block custom_bread %}
@@ -72,5 +73,11 @@
 
 	</div>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+{% block title %}我的消息 - 知行在线{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{% static 'css/usercenter.css' %}"><link rel="stylesheet" href="{% static 'css/usercenter-pages.css' %}">{% endblock %}
+{% block right_content %}<section class="uc-page"><header class="uc-page-heading"><div><p>通知中心</p><h1>我的消息</h1><span>查看来自平台的课程和账户通知。</span></div></header><div class="uc-message-list">{% for message in messages.object_list %}<article class="uc-message"><div class="uc-message-icon">✉</div><div><p>{{ message.message }}</p><time>{{ message.add_time|date:'Y-m-d H:i' }}</time></div></article>{% empty %}<div class="uc-empty"><strong>暂时没有新消息</strong><span>新的学习通知会显示在这里。</span></div>{% endfor %}</div>{% if messages.has_other_pages %}<nav class="uc-pagination">{% if messages.has_previous %}<a href="?page={{ messages.previous_page_number }}">上一页</a>{% endif %}{% for page_num in messages.paginator.page_range %}{% if page_num == messages.number %}<span class="active">{{ page_num }}</span>{% else %}<a href="?page={{ page_num }}">{{ page_num }}</a>{% endif %}{% endfor %}{% if messages.has_next %}<a href="?page={{ messages.next_page_number }}">下一页</a>{% endif %}</nav>{% endif %}</section>{% endblock %}
 
 

@@ -174,7 +174,11 @@ class ModifyPwdView(View):
 
             return render(request, "login.html")
         else:
-            return render(request, "password_reset.html", {"reset_code": request.POST.get("reset_code", ""), "modify_form": modify_form})
+            return render(request, "password_reset.html", {
+                "reset_code": request.POST.get("reset_code", ""),
+                "modify_form": modify_form,
+                "msg": ' '.join(error for errors in modify_form.errors.values() for error in errors),
+            })
 
 
 class UserinfoView(LoginRequiredMixin, View):
