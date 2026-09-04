@@ -65,9 +65,9 @@ class CourseDetailView(View):
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
 
-        # 增加课程点击数
-        course.click_nums += 1
-        course.save()
+        # 使用数据库原子更新，避免并发访问时丢失课程点击数。
+        Course.objects.filter(pk=course.pk).update(click_nums=F('click_nums') + 1)
+        course.refresh_from_db(fields=['click_nums'])
 
         # 是否收藏课程
         has_fav_course = False
@@ -75,21 +75,25 @@ class CourseDetailView(View):
         has_fav_org = False
 
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_id=course.id, fav_type=1):
-                has_fav_course = True
+            has_fav_course = UserFavorite.objects.filter(
+                user=request.user, fav_id=course.id, fav_type=1,
+            ).exists()
 
-            if course.course_org and UserFavorite.objects.filter(user=request.user, fav_id=course.course_org.id, fav_type=2):
-                has_fav_org = True
+            if course.course_org:
+                has_fav_org = UserFavorite.objects.filter(
+                    user=request.user, fav_id=course.course_org.id, fav_type=2,
+                ).exists()
 
         # 相关推荐
-        tag = course.tag
-        if tag:
-            relate_coures = Course.objects.filter(tag=tag)[:1]
+        relate_queryset = Course.objects.exclude(pk=course.pk).select_related('course_org')
+        if course.tag:
+            relate_queryset = relate_queryset.filter(tag=course.tag)
         else:
-            relate_coures = []
+            relate_queryset = relate_queryset.filter(category=course.category)
+        relate_courses = relate_queryset.order_by('-click_nums', '-add_time')[:3]
         return render(request, "course-detail.html", {
             "course": course,
-            "relate_coures": relate_coures,
+            "relate_courses": relate_courses,
             "has_fav_course": has_fav_course,
             "has_fav_org": has_fav_org
         })

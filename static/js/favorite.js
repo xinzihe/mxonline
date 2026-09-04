@@ -16,6 +16,14 @@
                     if (data.status === 'success') {
                         button.textContent = data.label || (data.action === 'followed' ? '取消关注' : followLabels[button.dataset.favType]);
                         button.classList.toggle('is-following', data.action === 'followed');
+                        button.setAttribute('aria-pressed', data.action === 'followed' ? 'true' : 'false');
+                        if (button.dataset.followCountTarget) {
+                            var counter = document.getElementById(button.dataset.followCountTarget);
+                            if (counter) {
+                                var count = parseInt(counter.textContent, 10) || 0;
+                                counter.textContent = Math.max(0, count + (data.action === 'followed' ? 1 : -1));
+                            }
+                        }
                         if (data.action === 'unfollowed' && button.closest('[data-favorite-list]')) {
                             window.location.reload();
                             return;

@@ -196,6 +196,8 @@ $('#jsRightBtn').on('click', function(){
 {% endcomment %}
 
 {% load static %}
+{% comment %}
+本次详情页优化前的生效版本完整保留，便于后续对照或回退。
 {% block title %}{{ course.name }} - 知行在线{% endblock %}
 {% block nav_course %}active{% endblock %}
 {% block custom_css %}<link rel="stylesheet" href="{% static 'css/detail.css' %}">{% endblock %}
@@ -210,3 +212,67 @@ $('#jsRightBtn').on('click', function(){
 <section class="detail-layout"><article class="detail-article"><h2>课程详情</h2><div class="rich-content">{% autoescape off %}{{ course.detail }}{% endautoescape %}</div></article><aside class="detail-sidebar">{% if course.course_org %}<section class="side-panel"><h3>授课机构</h3><a class="entity-link" href="{% url 'org:org_home' course.course_org.id %}">{% if course.course_org.image %}<img src="{{ MEDIA_URL }}{{ course.course_org.image }}" alt="{{ course.course_org.name }}">{% endif %}<span><strong>{{ course.course_org.name }}</strong><small>{{ course.course_org.address }}</small></span></a><button class="button-secondary button-full" data-favorite data-fav-id="{{ course.course_org.id }}" data-fav-type="2">{% if has_fav_org %}取消关注{% else %}关注机构{% endif %}</button></section>{% endif %}<section class="side-panel"><h3>相关课程</h3>{% for relate_course in relate_coures %}<a class="mini-course" href="{% url 'course:course_detail' relate_course.id %}">{{ relate_course.name }}<small>{{ relate_course.learn_times }} 分钟</small></a>{% empty %}<p class="muted">暂无相关推荐</p>{% endfor %}</section></aside></section>
 {% endblock %}
 {% block custom_js %}<script src="{% static 'js/favorite.js' %}?v=3" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}
+{% endcomment %}
+
+{% block title %}{{ course.name }} - 知行在线{% endblock %}
+{% block nav_course %}active{% endblock %}
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/page-breadcrumb.css' %}">
+<link rel="stylesheet" href="{% static 'css/course-detail-v2.css' %}">
+{% endblock %}
+{% block custom_bread %}
+<div class="page-breadcrumb"><div class="page-breadcrumb-inner"><a href="{% url 'index' %}">首页</a><span>/</span><a href="{% url 'course:course_list' %}">公开课程</a><span>/</span><span>{{ course.name }}</span></div></div>
+{% endblock %}
+{% block content %}
+<div class="course-detail-page">
+  <section class="course-hero">
+    <div class="course-cover">{% if course.image %}<img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}">{% else %}<div class="course-cover-empty">暂无课程封面</div>{% endif %}</div>
+    <div class="course-summary">
+      <div class="course-badges"><span>{{ course.get_degree_display }}</span><span>{{ course.category }}</span>{% if course.tag %}<span>{{ course.tag }}</span>{% endif %}</div>
+      <h1>{{ course.name }}</h1>
+      <p class="course-description">{{ course.desc }}</p>
+      <div class="course-stats">
+        <div><b>{{ course.learn_times }}</b><span>学习分钟</span></div>
+        <div><b>{{ course.get_zj_nums }}</b><span>课程章节</span></div>
+        <div><b>{{ course.students }}</b><span>学习人数</span></div>
+        <div><b id="course-follow-count">{{ course.fav_nums }}</b><span>关注人数</span></div>
+      </div>
+      <div class="course-actions">
+        <a class="course-start" href="{% url 'course:course_info' course.id %}"><span>▶</span>开始学习</a>
+        <button class="course-follow {% if has_fav_course %}is-following{% endif %}" type="button" data-favorite data-fav-id="{{ course.id }}" data-fav-type="1" data-follow-count-target="course-follow-count" aria-pressed="{% if has_fav_course %}true{% else %}false{% endif %}">{% if has_fav_course %}取消关注{% else %}关注课程{% endif %}</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="course-detail-layout">
+    <article class="course-detail-card">
+      <header class="course-section-title"><div><span>COURSE DETAIL</span><h2>课程详情</h2></div><time>{{ course.add_time|date:'Y-m-d' }} 更新</time></header>
+      <div class="course-rich-content">{% autoescape off %}{{ course.detail }}{% endautoescape %}</div>
+    </article>
+
+    <aside class="course-detail-sidebar">
+      {% if course.course_org %}
+        <section class="course-side-card">
+          <header><span>授课单位</span><h2>课程机构</h2></header>
+          <a class="course-entity" href="{% url 'org:org_home' course.course_org.id %}">{% if course.course_org.image %}<img src="{{ MEDIA_URL }}{{ course.course_org.image }}" alt="{{ course.course_org.name }}">{% endif %}<div><strong>{{ course.course_org.name }}</strong><span>{{ course.course_org.address }}</span><small><b id="org-follow-count">{{ course.course_org.fav_nums }}</b> 人关注</small></div></a>
+          <button class="side-follow {% if has_fav_org %}is-following{% endif %}" type="button" data-favorite data-fav-id="{{ course.course_org.id }}" data-fav-type="2" data-follow-count-target="org-follow-count" aria-pressed="{% if has_fav_org %}true{% else %}false{% endif %}">{% if has_fav_org %}取消关注{% else %}关注机构{% endif %}</button>
+        </section>
+      {% endif %}
+
+      {% if course.teacher %}
+        <section class="course-side-card">
+          <header><span>课程主讲</span><h2>授课讲师</h2></header>
+          <a class="course-entity teacher-entity" href="{% url 'org:teacher_detail' course.teacher.id %}">{% if course.teacher.image %}<img src="{{ MEDIA_URL }}{{ course.teacher.image }}" alt="{{ course.teacher.name }}">{% endif %}<div><strong>{{ course.teacher.name }}</strong><span>{{ course.teacher.work_company }} · {{ course.teacher.work_position }}</span><small>{{ course.teacher.work_years }} 年教学经验</small></div></a>
+          {% if course.teacher.points %}<p class="teacher-points">{{ course.teacher.points }}</p>{% endif %}
+        </section>
+      {% endif %}
+
+      <section class="course-side-card related-card">
+        <header><span>MORE COURSES</span><h2>相关课程</h2></header>
+        <div class="related-courses">{% for relate_course in relate_courses %}<a href="{% url 'course:course_detail' relate_course.id %}">{% if relate_course.image %}<img src="{{ MEDIA_URL }}{{ relate_course.image }}" alt="{{ relate_course.name }}">{% endif %}<div><strong>{{ relate_course.name }}</strong><span>{{ relate_course.get_degree_display }} · {{ relate_course.learn_times }} 分钟</span>{% if relate_course.course_org %}<small>{{ relate_course.course_org.name }}</small>{% endif %}</div></a>{% empty %}<div class="course-empty">暂无相关推荐</div>{% endfor %}</div>
+      </section>
+    </aside>
+  </section>
+</div>
+{% endblock %}
+{% block custom_js %}<script src="{% static 'js/favorite.js' %}?v=4" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}
