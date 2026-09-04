@@ -116,10 +116,17 @@ class CourseInfoView(LoginRequiredMixin, View):
         # 获取学过该用户学过其他的所有课程
         relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")[:5]
         all_resources = CourseResource.objects.filter(course=course)
+        all_comments = CourseComments.objects.filter(course=course).select_related('user').order_by("-id")
+        # 学习页直接嵌入播放器，首次进入时默认选中课程的第一节视频，但不自动播放。
+        current_video = Video.objects.filter(
+            lesson__course=course
+        ).select_related("lesson").order_by("lesson_id", "id").first()
         return render(request, "course-video.html", {
             "course": course,
+            "video": current_video,
             "course_resources": all_resources,
-            "relate_courses": relate_courses
+            "relate_courses": relate_courses,
+            "all_comments": all_comments,
         })
 
 
@@ -196,12 +203,15 @@ class VideoPlayView(LoginRequiredMixin, View):
         if not UserCourse.objects.filter(user=request.user, course=course).exists():
             return HttpResponse('请先从课程详情页开始学习', status=403)
 
-        # 3. 获取该课程下的所有学习资源
+        # 3. 视频播放复用课程学习页，不再打开一套独立且容易样式冲突的页面。
         all_resources = CourseResource.objects.filter(course=course)
+        all_comments = CourseComments.objects.filter(course=course).select_related('user').order_by("-id")
 
-        # 4. 渲染视频播放页面并传递数据
-        return render(request, "course-play.html", {
+        # 4. 渲染统一学习页面，并将用户点击的视频作为当前播放项。
+        return render(request, "course-video.html", {
             "course": course,
             "video": video,
-            "all_resources": all_resources,
+            "course_resources": all_resources,
+            "relate_courses": [],
+            "all_comments": all_comments,
         })

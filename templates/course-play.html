@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {#{% extends 'base.html' %}#}
 {#{% block title %}{{ video.name }} - 慕学在线网{% endblock %}#}
 {#{% load static %}#}
@@ -180,6 +181,8 @@
 {#        </div>#}
 {#    </div>#}
 {#{% endblock %}#}
+{% comment %}
+当前播放页改版前的实现完整保留，便于后续对照或回退。
 {% extends 'base.html' %}
 {% block title %}{{ video.name }} - 慕学在线网{% endblock %}
 {% load static %}
@@ -360,3 +363,78 @@
         </div>
     </div>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}{{ video.name }} - {{ course.name }}{% endblock %}
+{% block nav_course %}active{% endblock %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/page-breadcrumb.css' %}">
+<link rel="stylesheet" href="{% static 'css/course-player.css' %}">
+{% endblock %}
+
+{% block custom_bread %}
+<div class="page-breadcrumb">
+  <div class="page-breadcrumb-inner">
+    <a href="{% url 'index' %}">首页</a><span>/</span>
+    <a href="{% url 'course:course_list' %}">公开课程</a><span>/</span>
+    <a href="{% url 'course:course_info' course.id %}">{{ course.name }}</a><span>/</span>
+    <span>{{ video.name }}</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="player-shell">
+  <header class="player-heading">
+    <div><span class="player-kicker">正在学习 · {{ video.lesson.name }}</span><h1>{{ video.name }}</h1><p>{{ course.name }} · {{ video.learn_times }} 分钟</p></div>
+    <a href="{% url 'course:course_info' course.id %}">← 返回课程章节</a>
+  </header>
+
+  <div class="player-stage">
+    <div class="player-screen">
+      <video class="course-player" controls preload="metadata" playsinline data-course-player>
+        <source src="{{ MEDIA_URL }}{{ video.url }}" type="video/mp4">
+        您的浏览器不支持 HTML5 视频播放，请更换浏览器后重试。
+      </video>
+      <div class="player-error" data-player-error hidden><strong>视频暂时无法播放</strong><span>请检查视频文件是否存在，或稍后重新加载页面。</span></div>
+    </div>
+
+    <aside class="player-playlist">
+      <div class="playlist-title"><span>课程目录</span><strong>{{ course.get_zj_nums }} 个章节</strong></div>
+      <div class="playlist-scroll">
+        {% for lesson in course.get_course_lesson %}
+          <section class="playlist-lesson">
+            <h2><span>{{ forloop.counter|stringformat:'02d' }}</span>{{ lesson.name }}</h2>
+            <ul>
+              {% for lesson_video in lesson.get_lesson_video %}
+                <li><a class="{% if lesson_video.id == video.id %}active{% endif %}" href="{% url 'course:video_play' lesson_video.id %}"><span class="playlist-play">{% if lesson_video.id == video.id %}▶{% else %}▷{% endif %}</span><span class="playlist-name">{{ lesson_video.name }}</span><small>{{ lesson_video.learn_times }} 分钟</small></a></li>
+              {% empty %}
+                <li class="playlist-empty">暂无视频</li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% empty %}
+          <p class="playlist-empty">课程目录正在完善中。</p>
+        {% endfor %}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="player-detail-layout">
+  <article class="player-card player-course-info">
+    <div class="player-card-heading"><div><span>本节内容</span><h2>{{ video.name }}</h2></div><nav><a href="{% url 'course:course_info' course.id %}">课程章节</a><a href="{% url 'course:course_comments' course.id %}">课程评论</a></nav></div>
+    <div class="player-course-body"><p>{{ course.desc }}</p><div class="player-metrics"><span><b>{{ course.get_degree_display }}</b>课程难度</span><span><b>{{ video.learn_times }} 分钟</b>本节时长</span><span><b>{{ course.students }} 人</b>学习人数</span></div>{% if course.youneed_know %}<div class="player-note"><strong>课程须知</strong><p>{{ course.youneed_know }}</p></div>{% endif %}</div>
+  </article>
+
+  <aside class="player-side">
+    <section class="player-card player-resource"><div class="side-heading"><h2>课程资源</h2><span>资料下载</span></div>{% for course_resource in all_resources %}<a href="{{ MEDIA_URL }}{{ course_resource.download }}" download><span class="resource-mark">↧</span><span>{{ course_resource.name }}</span><small>下载</small></a>{% empty %}<p class="player-muted">暂无可下载资源</p>{% endfor %}</section>
+    {% if course.teacher %}<section class="player-card player-teacher"><div class="side-heading"><h2>授课讲师</h2></div><div class="teacher-profile">{% if course.teacher.image %}<img src="{{ MEDIA_URL }}{{ course.teacher.image }}" alt="{{ course.teacher.name }}">{% endif %}<div><strong>{{ course.teacher.name }}</strong><span>{{ course.teacher.work_position }}</span></div></div>{% if course.teacher_tell %}<p>{{ course.teacher_tell }}</p>{% endif %}</section>{% endif %}
+  </aside>
+</section>
+{% endblock %}
+
+{% block custom_js %}<script src="{% static 'js/course-player.js' %}"></script>{% endblock %}
