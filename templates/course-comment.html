@@ -203,9 +203,53 @@
 {% endcomment %}
 
 {% load static %}
-{% block title %}{{ course.name }} - 课程评论{% endblock %}
-{% block nav_course %}active{% endblock %}
+{% comment %}
+评论页本次改版前的简版结构保留，便于后续对照或回退。
 {% block custom_css %}<link rel="stylesheet" href="{% static 'css/learning.css' %}">{% endblock %}
 {% block content %}<section class="learning-header"><div><a href="{% url 'course:course_detail' course.id %}">← 返回课程详情</a><h1>{{ course.name }}</h1></div><div class="learning-tabs"><a href="{% url 'course:course_info' course.id %}">章节</a><a class="active" href="{% url 'course:course_comments' course.id %}">评论</a></div></section><section class="learning-layout"><article class="chapter-panel"><h2>学习者评论</h2><form class="comment-form" data-comment-form data-comment-url="{% url 'course:add_comment' %}" data-course-id="{{ course.id }}"><label for="course-comment">写下你的学习心得</label><textarea id="course-comment" name="comments" maxlength="200" placeholder="分享你对本课程的看法…"></textarea><button class="button-primary" type="submit">发布评论</button><p class="form-message" data-form-message></p></form><div class="comment-list">{% for comment in all_comments %}<article><strong>{{ comment.user.nick_name|default:comment.user.username }}</strong><time>{{ comment.add_time|date:'Y-m-d H:i' }}</time><p>{{ comment.comments }}</p></article>{% empty %}<p class="muted">暂时还没有评论，来写第一条吧。</p>{% endfor %}</div></article><aside class="resource-panel"><h2>课程资源</h2>{% for course_resource in course_resources %}<a href="{{ MEDIA_URL }}{{ course_resource.download }}" download>{{ course_resource.name }}<span>下载</span></a>{% empty %}<p class="muted">暂无资源</p>{% endfor %}</aside></section>{% endblock %}
+{% endcomment %}
+{% block title %}{{ course.name }} - 课程评论{% endblock %}
+{% block nav_course %}active{% endblock %}
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/page-breadcrumb.css' %}">
+<link rel="stylesheet" href="{% static 'css/course-learning.css' %}">
+<link rel="stylesheet" href="{% static 'css/course-comment.css' %}">
+{% endblock %}
+{% block custom_bread %}
+<div class="page-breadcrumb"><div class="page-breadcrumb-inner"><a href="{% url 'index' %}">首页</a><span>/</span><a href="{% url 'course:course_list' %}">公开课程</a><span>/</span><a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a><span>/</span><span>课程评论</span></div></div>
+{% endblock %}
+{% block content %}
+<section class="learning-hero comment-hero">
+  <div class="learning-hero-cover">{% if course.image %}<img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}">{% else %}<span>暂无课程封面</span>{% endif %}</div>
+  <div class="learning-hero-main"><a class="learning-back" href="{% url 'course:course_detail' course.id %}">← 返回课程详情</a><span class="learning-kicker">学习交流 · {{ course.get_degree_display }}</span><h1>{{ course.name }}</h1><p>{{ course.desc }}</p><div class="learning-stats"><span>⏱ {{ course.learn_times }} 分钟</span><span>👨‍🎓 {{ course.students }} 人正在学习</span>{% if course.course_org %}<span>⌂ {{ course.course_org.name }}</span>{% endif %}</div></div>
+</section>
+<section class="learning-layout comment-layout">
+  <article class="learning-card comment-main">
+    <div class="learning-card-title"><div><span>学习交流</span><h2>课程评论</h2></div><nav class="learning-tabs" aria-label="课程内容导航"><a href="{% url 'course:course_info' course.id %}">章节</a><a class="active" href="{% url 'course:course_comments' course.id %}">评论</a></nav></div>
+    <div class="comment-body">
+      <form class="comment-editor" data-comment-form data-comment-url="{% url 'course:add_comment' %}" data-course-id="{{ course.id }}">
+        <div class="comment-editor-heading"><div><strong>写下你的学习心得</strong><span>与其他学习者分享收获和思考</span></div><span class="comment-limit">最多 200 字</span></div>
+        <textarea id="course-comment" name="comments" maxlength="200" placeholder="分享你对本课程的理解、收获或建议……"></textarea>
+        <div class="comment-editor-actions"><p class="form-message" data-form-message></p><button class="comment-submit" type="submit">发布评论</button></div>
+      </form>
+      <section class="comment-section">
+        <div class="comment-section-title"><h3>全部评论</h3><span>共 {{ all_comments|length }} 条</span></div>
+        <div class="comment-list">
+          {% for comment in all_comments %}
+            <article class="comment-item"><div class="comment-avatar">{{ comment.user.nick_name|default:comment.user.username|first|upper }}</div><div class="comment-content"><header><strong>{{ comment.user.nick_name|default:comment.user.username }}</strong><time>{{ comment.add_time|date:'Y-m-d H:i' }}</time></header><p>{{ comment.comments }}</p></div></article>
+          {% empty %}
+            <div class="comment-empty"><span>💬</span><strong>暂时还没有评论</strong><p>完成学习后，来分享第一条心得吧。</p></div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+  </article>
+  <aside class="learning-sidebar">
+    <section class="learning-card side-card"><div class="side-card-title"><h2>课程资源</h2><span>资料下载</span></div><div class="resource-list">{% for course_resource in course_resources %}<a href="{{ MEDIA_URL }}{{ course_resource.download }}" download><span class="resource-icon">↧</span><span>{{ course_resource.name }}</span><small>下载</small></a>{% empty %}<p class="muted">暂无可下载资源</p>{% endfor %}</div></section>
+    {% if course.teacher %}<section class="learning-card side-card teacher-card"><div class="side-card-title"><h2>授课讲师</h2></div><div class="learning-teacher">{% if course.teacher.image %}<img src="{{ MEDIA_URL }}{{ course.teacher.image }}" alt="{{ course.teacher.name }}">{% endif %}<div><strong>{{ course.teacher.name }}</strong><span>{{ course.teacher.work_position }}</span></div></div>{% if course.teacher_tell %}<p><b>讲师寄语</b>{{ course.teacher_tell }}</p>{% endif %}</section>{% endif %}
+    <a class="back-to-learning" href="{% url 'course:course_info' course.id %}"><span>继续学习课程</span><b>返回章节 →</b></a>
+  </aside>
+</section>
+{% endblock %}
 {% block custom_js %}<script src="{% static 'js/course-comment.js' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}
 
