@@ -40,6 +40,9 @@ class CourseListView(View):
             elif sort == "hot":
                 all_courses = all_courses.order_by("-click_nums")
 
+        # 当前筛选条件下的课程总数，直接提供给模板展示。
+        course_nums = all_courses.count()
+
         # 对课程进行分页
         p = Paginator(all_courses, 12, request=request)
         try:
@@ -54,6 +57,7 @@ class CourseListView(View):
             "category": category,
             "degree": degree,
             "keywords": search_keywords,
+            "course_nums": course_nums,
         })
 
 

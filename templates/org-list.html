@@ -251,7 +251,7 @@
                 <a href="?sort=courses&ct={{ category }}&city={{ city_id }}" class="sort-tab {% if sort == 'courses' %}active{% endif %}">课程数 ↓</a>
             </div>
             <div class="sort-total">
-                共找到 <b>{{ all_orgs.paginator.count|default:all_orgs|length }}</b> 家符合条件的机构
+                共找到 <b>{{ org_nums }}</b> 家符合条件的机构
             </div>
         </div>
 

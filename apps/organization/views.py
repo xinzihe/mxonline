@@ -254,6 +254,8 @@ class TeacherListView(View):
             if sort == "hot":
                 all_teachers = all_teachers.order_by("-click_nums")
 
+        # 当前搜索条件下的讲师总数，直接提供给模板展示。
+        teacher_nums = all_teachers.count()
         sorted_teacher = Teacher.objects.all().order_by("-click_nums")[:3]
 
         # 对讲师进行分页
@@ -272,6 +274,7 @@ class TeacherListView(View):
             "sorted_teachers": sorted_teacher,
             "sort": sort,
             "fav_teacher_ids": fav_teacher_ids,
+            "teacher_nums": teacher_nums,
         })
 
 

@@ -169,7 +169,7 @@
                 <a href="?sort=students&category={{ category }}&degree={{ degree }}" class="sort-tab {% if sort == 'students' %}active{% endif %}">参与人数</a>
             </div>
             <div class="sort-total">
-                共找到 <b>{{ all_courses.paginator.count|default:all_courses|length }}</b> 门课程
+                共找到 <b>{{ course_nums }}</b> 门课程
             </div>
         </div>
 

@@ -16,7 +16,7 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 
 from courses.models import Course
 from organization.models import CourseOrg, Teacher
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from users.forms import LoginForm, RegisterForm, ForgetForm, ModifyPwdForm, UploadImageForm, UserInfoForm
 from users.models import UserProfile, EmailVerifyRecord, Banner
 from operation.models import UserCourse, UserFavorite, UserMessages
@@ -362,15 +362,19 @@ class IndexView(View):
         courses = Course.objects.filter(is_banner=False)[:6]
         banner_courses = Course.objects.filter(is_banner=True)[:3]
         course_orgs = CourseOrg.objects.all()[:15]
-        student_count = Course.objects.aggregate(total=Sum('students'))['total'] or 0
+        # 首页平台概览统一从数据库聚合，避免模板或视图写死统计数字。
+        course_stats = Course.objects.aggregate(
+            course_count=Count('id'),
+            student_count=Sum('students'),
+        )
         return render(request, 'index.html', {
             'all_banners': all_banners,
             'courses': courses,
             'banner_courses': banner_courses,
             'course_orgs': course_orgs,
-            'course_count': Course.objects.count(),
+            'course_count': course_stats['course_count'],
             'org_count': CourseOrg.objects.count(),
-            'student_count': student_count,
+            'student_count': course_stats['student_count'] or 0,
         })
 
 
