@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+{% comment %}
+机构页面公共模板改版前的完整实现保留，便于后续对照或回退。
 <!DOCTYPE html>
 <html>
 {% load static %}
@@ -239,3 +242,43 @@
 
 </body>
 </html>
+{% endcomment %}
+
+{% load static %}
+{% block title %}{{ course_org.name }} - 知行在线{% endblock %}
+{% block nav_org %}active{% endblock %}
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/page-breadcrumb.css' %}">
+<link rel="stylesheet" href="{% static 'css/org-detail-v2.css' %}">
+{% block org_custom_css %}{% endblock %}
+{% endblock %}
+
+{% block custom_bread %}
+<div class="page-breadcrumb"><div class="page-breadcrumb-inner"><a href="{% url 'index' %}">首页</a><span>/</span><a href="{% url 'org:org_list' %}">授课机构</a><span>/</span><span>{% block page_path %}机构首页{% endblock %}</span></div></div>
+{% endblock %}
+
+{% block content %}
+<div class="org-detail-shell">
+  <section class="org-profile-card">
+    <div class="org-profile-logo">{% if course_org.image %}<img src="{{ MEDIA_URL }}{{ course_org.image }}" alt="{{ course_org.name }}">{% else %}<span>{{ course_org.name|slice:':1' }}</span>{% endif %}</div>
+    <div class="org-profile-main">
+      <div class="org-profile-badges"><span>{{ course_org.get_category_display }}</span><span>{{ course_org.tag }}</span></div>
+      <h1>{{ course_org.name }}</h1>
+      <p>{{ course_org.desc|striptags|truncatechars:120 }}</p>
+      <div class="org-profile-meta"><span>⌖ {{ course_org.address }}</span><span>▣ {{ course_org.course_set.count }} 门课程</span><span>♙ {{ course_org.get_teacher_nums }} 位讲师</span><span>👨‍🎓 {{ course_org.students }} 名学员</span></div>
+    </div>
+    <div class="org-profile-action"><strong><b id="org-follow-count">{{ course_org.fav_nums }}</b> 人关注</strong><button class="org-follow-button {% if has_fav %}is-following{% endif %}" type="button" data-favorite data-fav-id="{{ course_org.id }}" data-fav-type="2" data-follow-count-target="org-follow-count" aria-pressed="{% if has_fav %}true{% else %}false{% endif %}">{% if has_fav %}取消关注{% else %}关注机构{% endif %}</button></div>
+  </section>
+
+  <nav class="org-detail-nav" aria-label="机构内容导航">
+    <a class="{% if current_page == 'home' %}active{% endif %}" href="{% url 'org:org_home' course_org.id %}">机构首页</a>
+    <a class="{% if current_page == 'course' %}active{% endif %}" href="{% url 'org:org_course' course_org.id %}">机构课程</a>
+    <a class="{% if current_page == 'teacher' %}active{% endif %}" href="{% url 'org:org_teacher' course_org.id %}">机构讲师</a>
+    <a class="{% if current_page == 'desc' %}active{% endif %}" href="{% url 'org:org_desc' course_org.id %}">机构介绍</a>
+  </nav>
+
+  <main class="org-detail-content">{% block right_form %}{% endblock %}</main>
+</div>
+{% endblock %}
+
+{% block custom_js %}<script src="{% static 'js/favorite.js' %}?v=4" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>{% endblock %}

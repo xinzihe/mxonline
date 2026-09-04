@@ -1,4 +1,6 @@
 {% extends 'org_base.html' %}
+{% comment %}
+机构首页改版前的完整实现保留，便于后续对照或回退。
 {% block title %}机构首页{% endblock %}
 {% block right_form %}
 <div class="right companycenter layout grouping" >
@@ -60,5 +62,45 @@
         <a class="green fr more" href="{% url 'org:org_desc' course_org.id %}">查看更多  >  </a>
     </div>
     <div class="cont">&nbsp; &nbsp; {% autoescape off %}{{ course_org.desc }}{% endautoescape %}<a href="/company/desc/22/"><span class="green">[查看更多]</span></a></div>
+</div>
+{% endblock %}
+{% endcomment %}
+
+{% load static %}
+{% block title %}{{ course_org.name }} - 机构首页{% endblock %}
+{% block page_path %}机构首页{% endblock %}
+{% block org_custom_css %}<link rel="stylesheet" href="{% static 'css/org-home-v2.css' %}">{% endblock %}
+{% block right_form %}
+<section class="org-home-section">
+  <header class="org-home-heading"><div><span>POPULAR COURSES</span><h2>热门课程</h2><p>从机构的优质课程开始你的学习计划。</p></div><a href="{% url 'org:org_course' course_org.id %}">查看全部课程 →</a></header>
+  <div class="org-course-grid">
+    {% for course in all_courses %}
+      <article class="org-course-card">
+        <a class="org-course-cover" href="{% url 'course:course_detail' course.id %}">{% if course.image %}<img src="{{ MEDIA_URL }}{{ course.image }}" alt="{{ course.name }}">{% else %}<span>暂无课程封面</span>{% endif %}<b>{{ course.get_degree_display }}</b></a>
+        <div class="org-course-body"><span>{{ course.category }}</span><h3><a href="{% url 'course:course_detail' course.id %}">{{ course.name }}</a></h3><p>{{ course.desc|truncatechars:72 }}</p><div><span>⏱ {{ course.learn_times }} 分钟</span><span>▤ {{ course.get_zj_nums }} 章</span></div></div>
+        <div class="org-course-footer"><span>👨‍🎓 {{ course.students }} 人学习</span><span>♡ {{ course.fav_nums }} 人关注</span></div>
+      </article>
+    {% empty %}
+      <div class="org-home-empty"><strong>该机构暂未发布课程</strong><span>课程上线后会在这里展示。</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<div class="org-home-bottom">
+  <section class="org-home-section">
+    <header class="org-home-heading compact"><div><span>TEACHER TEAM</span><h2>讲师团队</h2></div><a href="{% url 'org:org_teacher' course_org.id %}">全部讲师 →</a></header>
+    <div class="org-teacher-list">
+      {% for teacher in all_teachers %}
+        <a class="org-teacher-item" href="{% url 'org:teacher_detail' teacher.id %}">{% if teacher.image %}<img src="{{ MEDIA_URL }}{{ teacher.image }}" alt="{{ teacher.name }}">{% else %}<span class="org-teacher-avatar">{{ teacher.name|slice:':1' }}</span>{% endif %}<div><strong>{{ teacher.name }}</strong><span>{{ teacher.work_position }}</span><small>{{ teacher.work_years }} 年经验 · {{ teacher.get_course_nums }} 门课程</small>{% if teacher.points %}<p>{{ teacher.points }}</p>{% endif %}</div><b>查看详情 →</b></a>
+      {% empty %}
+        <div class="org-home-empty small"><strong>该机构暂无讲师信息</strong></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="org-home-section org-about-card">
+    <header class="org-home-heading compact"><div><span>ABOUT US</span><h2>机构介绍</h2></div><a href="{% url 'org:org_desc' course_org.id %}">详细介绍 →</a></header>
+    <div class="org-about-body"><div class="org-about-mark">“</div><p>{{ course_org.desc|striptags|truncatechars:360 }}</p><dl><div><dt>{{ course_org.course_set.count }}</dt><dd>课程数量</dd></div><div><dt>{{ course_org.get_teacher_nums }}</dt><dd>讲师数量</dd></div><div><dt>{{ course_org.students }}</dt><dd>累计学员</dd></div></dl></div>
+  </section>
 </div>
 {% endblock %}

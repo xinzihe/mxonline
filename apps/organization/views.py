@@ -94,16 +94,17 @@ class OrgHomeView(View):
     def get(self, request, org_id):
         current_page = "home"
         course_org = get_object_or_404(CourseOrg, id=org_id)
-        course_org.click_nums += 1
-        course_org.save()
+        # 使用数据库原子更新，避免并发访问时丢失机构点击数。
+        CourseOrg.objects.filter(pk=course_org.pk).update(click_nums=F('click_nums') + 1)
+        course_org.refresh_from_db(fields=['click_nums'])
         has_fav = False
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
-                has_fav = True
+            has_fav = UserFavorite.objects.filter(
+                user=request.user, fav_id=course_org.id, fav_type=2,
+            ).exists()
 
-        all_courses = course_org.course_set.all()[:3]
-        # all_courses = Course.objects.filter(course_org=course_org)[:3]
-        all_teachers = course_org.teacher_set.all()[:1]
+        all_courses = course_org.course_set.select_related('teacher').order_by('-click_nums', '-add_time')[:3]
+        all_teachers = course_org.teacher_set.all().order_by('-click_nums', '-add_time')[:3]
         return render(request, 'org-detail-homepage.html', {
             'all_courses': all_courses,
             'all_teachers': all_teachers,
@@ -123,8 +124,9 @@ class OrgCourseView(View):
         course_org = get_object_or_404(CourseOrg, id=org_id)
         has_fav = False
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
-                has_fav = True
+            has_fav = UserFavorite.objects.filter(
+                user=request.user, fav_id=course_org.id, fav_type=2,
+            ).exists()
         all_courses = course_org.course_set.all()
         return render(request, 'org-detail-course.html', {
             'all_courses': all_courses,
@@ -144,8 +146,9 @@ class OrgDescView(View):
         course_org = get_object_or_404(CourseOrg, id=org_id)
         has_fav = False
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
-                has_fav = True
+            has_fav = UserFavorite.objects.filter(
+                user=request.user, fav_id=course_org.id, fav_type=2,
+            ).exists()
         return render(request, 'org-detail-desc.html', {
             'course_org': course_org,
             'current_page': current_page,
@@ -163,8 +166,9 @@ class OrgTeacherView(View):
         course_org = get_object_or_404(CourseOrg, id=org_id)
         has_fav = False
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
-                has_fav = True
+            has_fav = UserFavorite.objects.filter(
+                user=request.user, fav_id=course_org.id, fav_type=2,
+            ).exists()
         all_teachers = course_org.teacher_set.all()
         return render(request, 'org-detail-teachers.html', {
             'all_teachers': all_teachers,
