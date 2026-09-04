@@ -124,7 +124,7 @@
 
 <!-- 引入授课讲师页专属 CSS -->
 {% block custom_css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/teachers-list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/teachers-list.css' %}?v=2">
     <link rel="stylesheet" type="text/css" href="{% static 'css/page-breadcrumb.css' %}">
 {% endblock %}
 
@@ -198,7 +198,7 @@
                         <!-- 右侧操作栏 -->
                         <div class="teacher-action">
                             <a href="{% url 'org:teacher_detail' teacher.id %}" class="btn-teacher-detail">查看详情</a>
-                            <button type="button" class="btn-teacher-fav" data-favorite data-fav-id="{{ teacher.id }}" data-fav-type="3">❤️ 关注讲师</button>
+                            <button type="button" class="btn-teacher-fav {% if teacher.id in fav_teacher_ids %}is-following{% endif %}" data-favorite data-fav-id="{{ teacher.id }}" data-fav-type="3">{% if teacher.id in fav_teacher_ids %}取消关注{% else %}关注讲师{% endif %}</button>
                         </div>
                     </div>
                 {% empty %}
@@ -272,12 +272,14 @@
                 </div>
             </div>
 
-            <!-- 讲师招募 Banner 卡片 -->
+            {% comment %}
+            讲师招募区域按页面展示要求移除，旧代码保留以便后续恢复。
             <div class="recruit-card">
                 <h3>成为知行讲师</h3>
                 <p>分享你的技术沉淀，获得行业影响力与丰厚回报。</p>
                 <a href="#" class="btn-recruit">申请成为讲师 →</a>
             </div>
+            {% endcomment %}
         </aside>
     </div>
 {% endblock %}
@@ -285,5 +287,5 @@
 <!-- 引入授课讲师页专属 JS -->
 {% block custom_js %}
     <script src="{% static 'js/teachers-list.js' %}"></script>
-    <script src="{% static 'js/favorite.js' %}" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>
+    <script src="{% static 'js/favorite.js' %}?v=3" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>
 {% endblock %}

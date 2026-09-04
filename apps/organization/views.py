@@ -2,7 +2,7 @@ from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 from django.db.models.query_utils import Q
 from django.db import transaction
 from django.db.models import F
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import View
 
@@ -189,25 +189,34 @@ class AddFavView(View):
             fav_id = int(request.POST.get('fav_id', 0))
             fav_type = int(request.POST.get('fav_type', 0))
         except (TypeError, ValueError):
-            return HttpResponse('{"status":"fail", "msg":"收藏参数错误"}', content_type='application/json')
+            return HttpResponse('{"status":"fail", "msg":"关注参数错误"}', content_type='application/json')
         model_by_type = {1: Course, 2: CourseOrg, 3: Teacher}
         model = model_by_type.get(fav_type)
         if not model or fav_id <= 0:
-            return HttpResponse('{"status":"fail", "msg":"收藏参数错误"}', content_type='application/json')
+            return HttpResponse('{"status":"fail", "msg":"关注参数错误"}', content_type='application/json')
 
         with transaction.atomic():
             target = get_object_or_404(model, pk=fav_id)
             favorite, created = UserFavorite.objects.get_or_create(
                 user=request.user, fav_id=fav_id, fav_type=fav_type,
             )
+            follow_label_by_type = {1: '关注课程', 2: '关注机构', 3: '关注讲师'}
             if created:
                 model.objects.filter(pk=target.pk).update(fav_nums=F('fav_nums') + 1)
-                message = '已收藏'
+                action = 'followed'
+                button_label = '取消关注'
             else:
                 favorite.delete()
                 model.objects.filter(pk=target.pk, fav_nums__gt=0).update(fav_nums=F('fav_nums') - 1)
-                message = '已取消收藏'
-        return HttpResponse(f'{{"status":"success", "msg":"{message}"}}', content_type='application/json')
+                action = 'unfollowed'
+                button_label = follow_label_by_type[fav_type]
+        return JsonResponse({
+            'status': 'success',
+            'action': action,
+            'label': button_label,
+            # 保留 msg 字段，兼容尚未改造的旧页面脚本。
+            'msg': button_label,
+        })
 
 
 class TeacherListView(View):
@@ -238,10 +247,16 @@ class TeacherListView(View):
             teachers = p.page(request.GET.get('page', 1))
         except (PageNotAnInteger, EmptyPage):
             teachers = p.page(1)
+        fav_teacher_ids = set()
+        if request.user.is_authenticated:
+            fav_teacher_ids = set(UserFavorite.objects.filter(
+                user=request.user, fav_type=3,
+            ).values_list('fav_id', flat=True))
         return render(request, "teachers-list.html", {
             "all_teachers": teachers,
             "sorted_teachers": sorted_teacher,
             "sort": sort,
+            "fav_teacher_ids": fav_teacher_ids,
         })
 
 

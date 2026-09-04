@@ -375,3 +375,61 @@
 }
 .btn-recruit:hover { opacity: 0.9; }
 .btn-teacher-fav{border:0;font:inherit;cursor:pointer}
+
+/* 讲师卡片操作区：两个操作保持相同尺寸和清晰的主次层级。 */
+.teacher-action {
+    width: 112px;
+    align-items: stretch;
+    gap: 10px;
+    padding-left: 24px;
+}
+.btn-teacher-detail,
+.btn-teacher-fav {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 112px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+}
+.btn-teacher-detail {
+    color: #fff;
+    background: #0284c7;
+    border: 1px solid #0284c7;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, .16);
+}
+.btn-teacher-detail:hover {
+    background: #0369a1;
+    border-color: #0369a1;
+}
+.btn-teacher-fav {
+    color: #0369a1;
+    background: #fff;
+    border: 1px solid #7dd3fc;
+}
+.btn-teacher-fav:hover {
+    color: #075985;
+    background: #f0f9ff;
+    border-color: #38bdf8;
+}
+.btn-teacher-fav.is-following {
+    color: #64748b;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+.btn-teacher-fav.is-following:hover {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+.btn-teacher-fav:disabled {
+    cursor: wait;
+    opacity: .65;
+}
