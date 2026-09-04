@@ -38,6 +38,8 @@
 {% endcomment %}
 
 {% load static %}
+{% comment %}
+机构讲师页第二版实现保留，便于后续对照或回退。
 {% block title %}{{ course_org.name }} - 机构讲师{% endblock %}
 {% block page_path %}机构讲师{% endblock %}
 {% block org_custom_css %}<link rel="stylesheet" href="{% static 'css/org-teachers-v2.css' %}">{% endblock %}
@@ -62,5 +64,74 @@
   </div>
 </section>
 {% endblock %}
+{% endcomment %}
 
+{% block title %}{{ course_org.name }} - 机构讲师{% endblock %}
+{% block page_path %}机构讲师{% endblock %}
 
+{% block org_custom_css %}
+<link rel="stylesheet" href="{% static 'css/org-teachers-v3.css' %}?v=1">
+{% endblock %}
+
+{% block right_form %}
+<section class="org-teachers-panel">
+  <header class="org-teachers-heading">
+    <div>
+      <h2>机构讲师</h2>
+      <p>了解讲师的教学经历和课程方向。</p>
+    </div>
+    <strong>共 {{ all_teachers|length }} 位讲师</strong>
+  </header>
+
+  <div class="org-teachers-grid">
+    {% for teacher in all_teachers %}
+    <article class="org-teacher-card">
+      <a class="org-teacher-photo" href="{% url 'org:teacher_detail' teacher.id %}" aria-label="查看{{ teacher.name }}的详情">
+        {% if teacher.image %}
+        <img src="{{ MEDIA_URL }}{{ teacher.image }}" alt="{{ teacher.name }}">
+        {% else %}
+        <span>{{ teacher.name|slice:':1' }}</span>
+        {% endif %}
+      </a>
+
+      <div class="org-teacher-content">
+        <div class="org-teacher-title">
+          <h3><a href="{% url 'org:teacher_detail' teacher.id %}">{{ teacher.name }}</a></h3>
+          {% if teacher.work_position %}<span>{{ teacher.work_position }}</span>{% endif %}
+        </div>
+
+        {% if teacher.work_company %}
+        <p class="org-teacher-company">{{ teacher.work_company }}</p>
+        {% endif %}
+
+        <div class="org-teacher-meta">
+          <span>工作年限：<b>{{ teacher.work_years }} 年</b></span>
+          <span>课程数：<b>{{ teacher.course_count }} 门</b></span>
+        </div>
+
+        {% if teacher.points %}
+        <p class="org-teacher-points">教学特点：{{ teacher.points }}</p>
+        {% endif %}
+      </div>
+
+      <div class="org-teacher-actions">
+        <a class="org-teacher-link" href="{% url 'org:teacher_detail' teacher.id %}">查看详情</a>
+        <button
+          class="org-teacher-follow {% if teacher.id in fav_teacher_ids %}is-following{% endif %}"
+          type="button"
+          data-favorite
+          data-fav-id="{{ teacher.id }}"
+          data-fav-type="3"
+          aria-pressed="{% if teacher.id in fav_teacher_ids %}true{% else %}false{% endif %}"
+        >{% if teacher.id in fav_teacher_ids %}取消关注{% else %}关注讲师{% endif %}</button>
+      </div>
+    </article>
+    {% empty %}
+    <div class="org-teachers-empty">
+      <strong>该机构暂无讲师信息</strong>
+      <span>讲师入驻后会在这里展示。</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

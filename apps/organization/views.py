@@ -1,7 +1,7 @@
 from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 from django.db.models.query_utils import Q
 from django.db import transaction
-from django.db.models import F
+from django.db.models import Count, F
 from django.http.response import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import View
@@ -169,12 +169,23 @@ class OrgTeacherView(View):
             has_fav = UserFavorite.objects.filter(
                 user=request.user, fav_id=course_org.id, fav_type=2,
             ).exists()
-        all_teachers = course_org.teacher_set.all()
+        # 一次性统计每位讲师的课程数，避免模板逐条查询造成 N+1 问题。
+        all_teachers = course_org.teacher_set.annotate(
+            course_count=Count('course', distinct=True),
+        ).order_by('-click_nums', '-add_time')
+        fav_teacher_ids = set()
+        if request.user.is_authenticated:
+            fav_teacher_ids = set(UserFavorite.objects.filter(
+                user=request.user,
+                fav_type=3,
+                fav_id__in=course_org.teacher_set.values('id'),
+            ).values_list('fav_id', flat=True))
         return render(request, 'org-detail-teachers.html', {
             'all_teachers': all_teachers,
             'course_org': course_org,
             'current_page': current_page,
-            'has_fav': has_fav
+            'has_fav': has_fav,
+            'fav_teacher_ids': fav_teacher_ids,
 
         })
 
@@ -266,23 +277,37 @@ class TeacherListView(View):
 
 class TeacherDetailView(View):
     def get(self, request, teacher_id):
-        teacher = get_object_or_404(Teacher, id=teacher_id)
-        teacher.click_nums += 1
-        teacher.save()
-        all_courses = Course.objects.filter(teacher=teacher)
+        teacher = get_object_or_404(
+            Teacher.objects.select_related('org'),
+            id=teacher_id,
+        )
+        # 使用数据库原子更新，避免并发访问时丢失讲师点击数。
+        Teacher.objects.filter(pk=teacher.pk).update(click_nums=F('click_nums') + 1)
+        teacher.refresh_from_db(fields=['click_nums'])
+        all_courses = Course.objects.filter(teacher=teacher).select_related(
+            'course_org',
+        ).order_by('-click_nums', '-add_time')
 
         has_teacher_faved = False
         if request.user.is_authenticated:
-            if UserFavorite.objects.filter(user=request.user, fav_type=3, fav_id=teacher.id):
-                has_teacher_faved = True
+            has_teacher_faved = UserFavorite.objects.filter(
+                user=request.user,
+                fav_type=3,
+                fav_id=teacher.id,
+            ).exists()
 
         has_org_faved = False
-        if request.user.is_authenticated:
-            if teacher.org and UserFavorite.objects.filter(user=request.user, fav_type=2, fav_id=teacher.org.id):
-                has_org_faved = True
+        if request.user.is_authenticated and teacher.org:
+            has_org_faved = UserFavorite.objects.filter(
+                user=request.user,
+                fav_type=2,
+                fav_id=teacher.org.id,
+            ).exists()
 
         # 讲师排行
-        sorted_teacher = Teacher.objects.all().order_by("-click_nums")[:3]
+        sorted_teacher = Teacher.objects.select_related('org').exclude(
+            pk=teacher.pk,
+        ).order_by('-click_nums', '-add_time')[:3]
         return render(request, "teacher-detail.html", {
             "teacher": teacher,
             "all_courses": all_courses,

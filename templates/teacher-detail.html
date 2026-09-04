@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% comment %}
+讲师详情页改版前的完整实现保留，便于后续对照或回退。
 {% block title %}讲师详情 - 慕学在线网{% endblock %}
 {% load static %}
 {% block custom_bread %}
@@ -12,6 +14,186 @@
         </div>
     </section>
 {% endblock %}
+{% endcomment %}
+
+{% load static %}
+
+{% block title %}{{ teacher.name }} - 授课讲师{% endblock %}
+{% block nav_teacher %}active{% endblock %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/page-breadcrumb.css' %}">
+<link rel="stylesheet" href="{% static 'css/teacher-detail-v2.css' %}?v=1">
+{% endblock %}
+
+{% block custom_bread %}
+<div class="page-breadcrumb">
+  <div class="page-breadcrumb-inner">
+    <a href="{% url 'index' %}">首页</a>
+    <span>/</span>
+    <a href="{% url 'org:teacher_list' %}">授课教师</a>
+    <span>/</span>
+    <span>讲师详情</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="teacher-detail-page">
+  <section class="teacher-profile-card">
+    <div class="teacher-profile-photo">
+      {% if teacher.image %}
+      <img src="{{ MEDIA_URL }}{{ teacher.image }}" alt="{{ teacher.name }}">
+      {% else %}
+      <span>{{ teacher.name|slice:':1' }}</span>
+      {% endif %}
+    </div>
+
+    <div class="teacher-profile-main">
+      <div class="teacher-profile-title">
+        <h1>{{ teacher.name }}</h1>
+        {% if teacher.work_position %}<span>{{ teacher.work_position }}</span>{% endif %}
+      </div>
+      {% if teacher.work_company %}<p class="teacher-company">{{ teacher.work_company }}</p>{% endif %}
+      <div class="teacher-profile-meta">
+        <span><b>{{ teacher.work_years }}</b> 年工作经验</span>
+        <span><b>{{ all_courses|length }}</b> 门课程</span>
+        <span><b id="teacher-follow-count">{{ teacher.fav_nums }}</b> 人关注</span>
+        <span><b>{{ teacher.click_nums }}</b> 次浏览</span>
+      </div>
+      {% if teacher.points %}<p class="teacher-profile-points">教学特点：{{ teacher.points }}</p>{% endif %}
+    </div>
+
+    <div class="teacher-profile-action">
+      <button
+        class="teacher-follow-button {% if has_teacher_faved %}is-following{% endif %}"
+        type="button"
+        data-favorite
+        data-fav-id="{{ teacher.id }}"
+        data-fav-type="3"
+        data-follow-count-target="teacher-follow-count"
+        aria-pressed="{% if has_teacher_faved %}true{% else %}false{% endif %}"
+      >{% if has_teacher_faved %}取消关注{% else %}关注讲师{% endif %}</button>
+    </div>
+  </section>
+
+  <div class="teacher-detail-layout">
+    <main class="teacher-course-panel">
+      <header class="teacher-section-heading">
+        <div>
+          <h2>讲师课程</h2>
+          <p>选择课程，开始跟随讲师系统学习。</p>
+        </div>
+        <strong>共 {{ all_courses|length }} 门课程</strong>
+      </header>
+
+      <div class="teacher-course-grid">
+        {% for teacher_course in all_courses %}
+        <article class="teacher-course-card">
+          <a class="teacher-course-cover" href="{% url 'course:course_detail' teacher_course.id %}">
+            {% if teacher_course.image %}
+            <img src="{{ MEDIA_URL }}{{ teacher_course.image }}" alt="{{ teacher_course.name }}">
+            {% else %}
+            <span>暂无课程封面</span>
+            {% endif %}
+            <b>{{ teacher_course.get_degree_display }}</b>
+          </a>
+          <div class="teacher-course-body">
+            <span>{{ teacher_course.category }}</span>
+            <h3><a href="{% url 'course:course_detail' teacher_course.id %}">{{ teacher_course.name }}</a></h3>
+            <p>{{ teacher_course.desc|truncatechars:70 }}</p>
+            <div class="teacher-course-meta">
+              <span>{{ teacher_course.learn_times }} 分钟</span>
+              <span>{{ teacher_course.students }} 人学习</span>
+            </div>
+          </div>
+          <footer>
+            <span>{% if teacher_course.course_org %}{{ teacher_course.course_org.name }}{% else %}暂无所属机构{% endif %}</span>
+            <span>{{ teacher_course.fav_nums }} 人关注</span>
+          </footer>
+        </article>
+        {% empty %}
+        <div class="teacher-empty-state">
+          <strong>该讲师暂未发布课程</strong>
+          <span>课程上线后会在这里展示。</span>
+        </div>
+        {% endfor %}
+      </div>
+    </main>
+
+    <aside class="teacher-detail-sidebar">
+      {% if teacher.org %}
+      <section class="teacher-side-card teacher-org-card">
+        <header>
+          <h2>所属机构</h2>
+          <span>{{ teacher.org.get_category_display }}</span>
+        </header>
+        <a class="teacher-org-profile" href="{% url 'org:org_home' teacher.org.id %}">
+          <div class="teacher-org-logo">
+            {% if teacher.org.image %}
+            <img src="{{ MEDIA_URL }}{{ teacher.org.image }}" alt="{{ teacher.org.name }}">
+            {% else %}
+            <span>{{ teacher.org.name|slice:':1' }}</span>
+            {% endif %}
+          </div>
+          <div>
+            <strong>{{ teacher.org.name }}</strong>
+            <span>{{ teacher.org.address }}</span>
+          </div>
+        </a>
+        {% if teacher.org.desc %}<p>{{ teacher.org.desc|striptags|truncatechars:90 }}</p>{% endif %}
+        <div class="teacher-org-follow-row">
+          <span><b id="teacher-org-follow-count">{{ teacher.org.fav_nums }}</b> 人关注</span>
+          <button
+            class="teacher-org-follow {% if has_org_faved %}is-following{% endif %}"
+            type="button"
+            data-favorite
+            data-fav-id="{{ teacher.org.id }}"
+            data-fav-type="2"
+            data-follow-count-target="teacher-org-follow-count"
+            aria-pressed="{% if has_org_faved %}true{% else %}false{% endif %}"
+          >{% if has_org_faved %}取消关注{% else %}关注机构{% endif %}</button>
+        </div>
+      </section>
+      {% endif %}
+
+      <section class="teacher-side-card teacher-ranking-card">
+        <header>
+          <h2>热门讲师</h2>
+          <a href="{% url 'org:teacher_list' %}?sort=hot">查看全部</a>
+        </header>
+        <div class="teacher-ranking-list">
+          {% for hot_teacher in sorted_teacher %}
+          <a href="{% url 'org:teacher_detail' hot_teacher.id %}">
+            <span class="teacher-rank-number">{{ forloop.counter }}</span>
+            <div class="teacher-rank-photo">
+              {% if hot_teacher.image %}
+              <img src="{{ MEDIA_URL }}{{ hot_teacher.image }}" alt="{{ hot_teacher.name }}">
+              {% else %}
+              <span>{{ hot_teacher.name|slice:':1' }}</span>
+              {% endif %}
+            </div>
+            <div>
+              <strong>{{ hot_teacher.name }}</strong>
+              <span>{{ hot_teacher.work_position|default:'授课讲师' }}</span>
+              <small>{{ hot_teacher.work_years }} 年经验</small>
+            </div>
+          </a>
+          {% empty %}
+          <p class="teacher-ranking-empty">暂无其他讲师</p>
+          {% endfor %}
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+<script src="{% static 'js/favorite.js' %}?v=4" data-favorite-url="{% url 'org:add_fav' %}" data-login-url="{% url 'login' %}"></script>
+{% endblock %}
+{% comment %}
+讲师详情页改版前的主体与内联脚本继续保留，便于后续对照或回退。
 {% block content %}
     <section>
 	<div class="wp butler-detail-box butler-diaryd-box clearfix">
@@ -134,8 +316,11 @@
 	</div>
 </section>
 {% endblock %}
+{% endcomment %}
 
 
+{% comment %}
+讲师详情页改版前的内联关注脚本保留，不再执行。
 {% block custom_js %}
 <script type="text/javascript">
 //收藏分享
@@ -176,4 +361,5 @@ $('#jsRightBtn').on('click', function(){
 </script>
 
 {% endblock %}
+{% endcomment %}
 
