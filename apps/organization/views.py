@@ -25,8 +25,9 @@ class OrgView(View):
         all_orgs = CourseOrg.objects.all()
         hot_orgs = all_orgs.order_by("-click_nums")[:3]
 
-        # 城市
-        all_citys = CityDict.objects.all()
+        # 筛选项统一由后端提供，模板不再写死类别和城市。
+        org_categories = list(CourseOrg._meta.get_field('category').choices)
+        all_cities = CityDict.objects.all().order_by('id')
 
         # 机构搜索
         search_keywords = request.GET.get('keywords', "")
@@ -43,8 +44,11 @@ class OrgView(View):
 
         # 类别筛选
         category = request.GET.get('ct', "")
-        if category:
+        valid_categories = {value for value, _label in org_categories}
+        if category in valid_categories:
             all_orgs = all_orgs.filter(category=category)
+        else:
+            category = ''
 
         sort = request.GET.get('sort', "")
         if sort:
@@ -63,7 +67,8 @@ class OrgView(View):
             orgs = p.page(1)
         return render(request, "org-list.html", {
             "all_orgs": orgs,
-            "all_citys": all_citys,
+            "all_cities": all_cities,
+            "org_categories": org_categories,
             "org_nums": org_nums,
             "city_id": city_id,
             "category": category,

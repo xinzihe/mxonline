@@ -216,9 +216,9 @@
         <div class="filter-label">机构类别：</div>
         <div class="filter-options">
             <a href="?ct=&city={{ city_id }}&sort={{ sort }}" class="filter-item {% if not category %}active{% endif %}">全部</a>
-            <a href="?ct=pxjg&city={{ city_id }}&sort={{ sort }}" class="filter-item {% if category == 'pxjg' %}active{% endif %}">培训机构</a>
-            <a href="?ct=gx&city={{ city_id }}&sort={{ sort }}" class="filter-item {% if category == 'gx' %}active{% endif %}">高校</a>
-            <a href="?ct=gr&city={{ city_id }}&sort={{ sort }}" class="filter-item {% if category == 'gr' %}active{% endif %}">个人实验室</a>
+            {% for category_value, category_label in org_categories %}
+                <a href="?ct={{ category_value }}&city={{ city_id }}&sort={{ sort }}" class="filter-item {% if category == category_value %}active{% endif %}">{{ category_label }}</a>
+            {% endfor %}
         </div>
     </div>
 
@@ -229,11 +229,6 @@
             <a href="?city=&ct={{ category }}&sort={{ sort }}" class="filter-item {% if not city_id %}active{% endif %}">全国</a>
             {% for city in all_cities %}
                 <a href="?city={{ city.id }}&ct={{ category }}&sort={{ sort }}" class="filter-item {% if city_id == city.id|stringformat:'i' %}active{% endif %}">{{ city.name }}</a>
-            {% empty %}
-                <a href="?city=1&ct={{ category }}&sort={{ sort }}" class="filter-item {% if city_id == '1' %}active{% endif %}">北京</a>
-                <a href="?city=2&ct={{ category }}&sort={{ sort }}" class="filter-item {% if city_id == '2' %}active{% endif %}">上海</a>
-                <a href="?city=3&ct={{ category }}&sort={{ sort }}" class="filter-item {% if city_id == '3' %}active{% endif %}">广州</a>
-                <a href="?city=4&ct={{ category }}&sort={{ sort }}" class="filter-item {% if city_id == '4' %}active{% endif %}">深圳</a>
             {% endfor %}
         </div>
     </div>
@@ -257,7 +252,7 @@
 
         <!-- 横向机构卡片列表 -->
         <div class="org-list">
-            {% for org in all_orgs.object_list|default:all_orgs %}
+            {% for org in all_orgs.object_list %}
             <div class="org-card">
                 <!-- 机构 Logo -->
                 <div class="org-logo-wrap">
