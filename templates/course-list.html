@@ -175,7 +175,7 @@
 
         <!-- 课程网格 -->
         <div class="course-grid">
-            {% for course in all_courses.object_list|default:all_courses %}
+            {% for course in all_courses.object_list %}
             <a href="{% url 'course:course_detail' course.id %}" class="course-card course-card-link">
                 <div class="course-cover">
                     {% if course.image %}
