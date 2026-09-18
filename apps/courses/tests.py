@@ -25,6 +25,10 @@ class CourseUrlTests(SimpleTestCase):
             'category': '',
             'degree': '',
             'keywords': '',
+            'course_categories': ['后端开发'],
+            'course_degrees': [('cj', '初级')],
         }, request=request)
 
         self.assertIn('未找到符合条件的课程', html)
+        self.assertIn('后端开发', html)
+        self.assertIn('初级', html)

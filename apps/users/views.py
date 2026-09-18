@@ -362,6 +362,26 @@ class IndexView(View):
         courses = Course.objects.filter(is_banner=False)[:6]
         banner_courses = Course.objects.filter(is_banner=True)[:3]
         course_orgs = CourseOrg.objects.all()[:15]
+        category_rows = list(Course.objects.exclude(
+            category='',
+        ).values('category').annotate(
+            course_count=Count('id'),
+        ).order_by('-course_count', 'category')[:6])
+        category_names = [row['category'] for row in category_rows]
+        category_tags = {}
+        for category_name, tag in Course.objects.filter(
+            category__in=category_names,
+        ).exclude(tag='').order_by('category', 'tag').values_list(
+            'category', 'tag',
+        ).distinct():
+            category_tags.setdefault(category_name, []).append(tag)
+        course_categories = []
+        for row in category_rows:
+            tags = category_tags.get(row['category'], [])[:2]
+            course_categories.append({
+                'name': row['category'],
+                'summary': ' / '.join(tags) if tags else f"{row['course_count']} 门课程",
+            })
         # 首页平台概览统一从数据库聚合，避免模板或视图写死统计数字。
         course_stats = Course.objects.aggregate(
             course_count=Count('id'),
@@ -375,6 +395,7 @@ class IndexView(View):
             'course_count': course_stats['course_count'],
             'org_count': CourseOrg.objects.count(),
             'student_count': course_stats['student_count'] or 0,
+            'course_categories': course_categories,
         })
 
 

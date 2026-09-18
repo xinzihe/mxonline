@@ -137,11 +137,9 @@
         <div class="filter-label">课程方向：</div>
         <div class="filter-options">
             <a href="?category=&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if not category %}active{% endif %}">全部</a>
-            <a href="?category=后端开发&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == '后端开发' %}active{% endif %}">后端开发</a>
-            <a href="?category=前端开发&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == '前端开发' %}active{% endif %}">前端开发</a>
-            <a href="?category=人工智能&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == '人工智能' %}active{% endif %}">人工智能</a>
-            <a href="?category=移动开发&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == '移动开发' %}active{% endif %}">移动开发</a>
-            <a href="?category=数据库&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == '数据库' %}active{% endif %}">数据库</a>
+            {% for category_name in course_categories %}
+            <a href="?category={{ category_name|urlencode }}&degree={{ degree }}&sort={{ sort }}" class="filter-item {% if category == category_name %}active{% endif %}">{{ category_name }}</a>
+            {% endfor %}
         </div>
     </div>
 
@@ -150,9 +148,9 @@
         <div class="filter-label">难度等级：</div>
         <div class="filter-options">
             <a href="?degree=&category={{ category }}&sort={{ sort }}" class="filter-item {% if not degree %}active{% endif %}">全部</a>
-            <a href="?degree=cj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'cj' %}active{% endif %}">初级</a>
-            <a href="?degree=zj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'zj' %}active{% endif %}">中级</a>
-            <a href="?degree=gj&category={{ category }}&sort={{ sort }}" class="filter-item {% if degree == 'gj' %}active{% endif %}">高级</a>
+            {% for degree_value, degree_label in course_degrees %}
+            <a href="?degree={{ degree_value }}&category={{ category|urlencode }}&sort={{ sort }}" class="filter-item {% if degree == degree_value %}active{% endif %}">{{ degree_label }}</a>
+            {% endfor %}
         </div>
     </div>
 </section>

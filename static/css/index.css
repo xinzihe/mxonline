@@ -31,6 +31,12 @@
     padding-left: 24px;
 }
 .category-item span { color: #94a3b8; font-size: 12px; }
+.category-empty {
+    padding: 22px 20px;
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+}
 
 /* 中间主 Banner */
 .main-banner {

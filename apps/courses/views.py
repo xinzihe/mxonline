@@ -17,6 +17,19 @@ class CourseListView(View):
 
         hot_courses = Course.objects.all().order_by("-click_nums")[:3]
 
+        # 课程方向和难度选项均根据数据库中的实际课程动态生成。
+        course_categories = list(Course.objects.exclude(
+            category='',
+        ).order_by('category').values_list('category', flat=True).distinct())
+        used_degrees = set(Course.objects.exclude(
+            degree='',
+        ).values_list('degree', flat=True).distinct())
+        course_degrees = [
+            (value, label)
+            for value, label in Course._meta.get_field('degree').choices
+            if value in used_degrees
+        ]
+
         # 课程搜索
         search_keywords = request.GET.get('keywords', "")
         if search_keywords:
@@ -25,12 +38,17 @@ class CourseListView(View):
                     detail__icontains=search_keywords))
 
         category = request.GET.get('category', '')
-        if category:
+        if category in course_categories:
             all_courses = all_courses.filter(category=category)
+        else:
+            category = ''
 
         degree = request.GET.get('degree', '')
-        if degree in {'cj', 'zj', 'gj'}:
+        valid_degrees = {value for value, _label in course_degrees}
+        if degree in valid_degrees:
             all_courses = all_courses.filter(degree=degree)
+        else:
+            degree = ''
 
         # 课程排序
         sort = request.GET.get('sort', "")
@@ -58,6 +76,8 @@ class CourseListView(View):
             "degree": degree,
             "keywords": search_keywords,
             "course_nums": course_nums,
+            "course_categories": course_categories,
+            "course_degrees": course_degrees,
         })
 
 
