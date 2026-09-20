@@ -190,6 +190,8 @@ if not DEBUG:
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# FFmpeg 的 ffprobe 可执行文件；默认从系统 PATH 中查找。
+FFPROBE_PATH = os.environ.get('FFPROBE_PATH', 'ffprobe')
 
 JAZZMIN_SETTINGS = {
     # "language_chooser": True,

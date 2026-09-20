@@ -15,6 +15,7 @@ class LessonAdmin(admin.ModelAdmin):
 
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('name', 'learn_times', 'url', 'add_time')
+    readonly_fields = ('learn_times',)
 
 
 class CourseResourceAdmin(admin.ModelAdmin):

@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 
 from organization.models import CourseOrg, Teacher
+from courses.video_duration import VideoDurationError, get_video_duration_minutes
 
 
 # Create your models here.
@@ -86,6 +87,29 @@ class Video(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        """Persist the upload first, then derive its displayed duration."""
+        is_new = self._state.adding
+        previous_url = None
+        if not is_new and self.pk:
+            previous_url = type(self).objects.filter(pk=self.pk).values_list('url', flat=True).first()
+
+        super().save(*args, **kwargs)
+
+        if not self.url or (not is_new and self.url.name == previous_url):
+            return
+
+        try:
+            minutes = get_video_duration_minutes(self.url.path)
+        except (VideoDurationError, NotImplementedError):
+            # Keep the record usable if a remote storage backend has no local
+            # path, or an invalid/non-video file is selected in the admin.
+            return
+
+        if self.learn_times != minutes:
+            type(self).objects.filter(pk=self.pk).update(learn_times=minutes)
+            self.learn_times = minutes
 
 
 # 课程资源

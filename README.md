@@ -16,6 +16,10 @@ $env:EMAIL_HOST_PASSWORD = 'your-smtp-app-password'
 
 完整变量清单见 `.env.example`。生产环境还必须设置 `DJANGO_DEBUG=false`、`DJANGO_ALLOWED_HOSTS` 和 HTTPS 相关配置。
 
+## 视频时长自动读取
+
+后台上传或替换课程视频后，系统会用 FFmpeg 附带的 `ffprobe` 自动读取真实时长，并向上取整为分钟写入“学习时长”。请在部署服务器安装 FFmpeg 并将 `ffprobe` 加入 `PATH`；若无法加入 PATH，可通过 `FFPROBE_PATH` 配置其绝对路径。
+
 安装依赖、执行迁移并启动：
 
 ```powershell
