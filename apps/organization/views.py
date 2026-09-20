@@ -21,8 +21,8 @@ class OrgView(View):
     """
 
     def get(self, request):
-        # 课程机构
-        all_orgs = CourseOrg.objects.all()
+        # 课程数以实际关联的 Course 记录为准，不依赖容易过期的 course_nums 缓存字段。
+        all_orgs = CourseOrg.objects.annotate(course_count=Count('course', distinct=True))
         hot_orgs = all_orgs.order_by("-click_nums")[:3]
 
         # 筛选项统一由后端提供，模板不再写死类别和城市。
@@ -55,7 +55,7 @@ class OrgView(View):
             if sort == "students":
                 all_orgs = all_orgs.order_by("-students")
             elif sort == "courses":
-                all_orgs = all_orgs.order_by("-course_nums")
+                all_orgs = all_orgs.order_by("-course_count")
 
         org_nums = all_orgs.count()
 
