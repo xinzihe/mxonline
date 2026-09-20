@@ -177,9 +177,9 @@
             <form action="{% url 'login' %}" method="post" autocomplete="off">
                 {% csrf_token %}
 
-                <div class="form-group {% if login_form.errors.username %}errorput{% endif %}">
-                    <label for="account_l">账号</label>
-                    <input name="username" id="account_l" type="text" placeholder="用户名" required />
+                <div class="form-group {% if login_form.errors.email %}errorput{% endif %}">
+                    <label for="id_email">邮箱</label>
+                    <input name="email" id="id_email" type="email" placeholder="请输入注册邮箱" autocomplete="email" required />
                 </div>
 
                 <div class="form-group {% if login_form.errors.password %}errorput{% endif %}">

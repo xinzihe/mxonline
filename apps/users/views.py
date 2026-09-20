@@ -27,16 +27,14 @@ from utils.mixin_utils import LoginRequiredMixin
 # Create your views here.
 class CustomBackend(ModelBackend):
     # 必须加上 request 参数
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            # 支持用户名或邮箱登录
-            # user = UserProfile.objects.get(Q(username=username) | Q(email=username))
-            user = UserProfile.objects.get(username=username)
-            # 校验密码，并确保用户处于激活状态 (is_active=True)
-            if user.check_password(password) and self.user_can_authenticate(user):
-                return user
-        except UserProfile.DoesNotExist:
+    def authenticate(self, request, email=None, password=None, **kwargs):
+        if not email:
             return None
+
+        # 平台采用邮箱注册、邮箱登录；username 仅保留为 Django 内部兼容字段。
+        user = UserProfile.objects.filter(email__iexact=email).first()
+        if user and user.check_password(password) and self.user_can_authenticate(user):
+            return user
         return None
 
 
@@ -52,7 +50,9 @@ class ActiveUserView(View):
         user.save(update_fields=['is_active'])
         record.used_at = timezone.now()
         record.save(update_fields=['used_at'])
-        return render(request, "login.html")
+        return render(request, "login.html", {
+            'msg': '邮箱已激活成功，请使用注册邮箱和密码登录。',
+        })
 
 
 class RegisterView(View):
@@ -106,9 +106,9 @@ class LoginView(View):
     def post(self, request):
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
-            user_name = request.POST.get("username", "")
-            pass_word = request.POST.get("password", "")
-            user = authenticate(username=user_name, password=pass_word)
+            email = login_form.cleaned_data['email']
+            pass_word = login_form.cleaned_data['password']
+            user = authenticate(request, email=email, password=pass_word)
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -116,7 +116,7 @@ class LoginView(View):
                 else:
                     return render(request, "login.html", {"msg": "用户未激活！"})
             else:
-                return render(request, "login.html", {"msg": "用户名或密码错误！"})
+                return render(request, "login.html", {"msg": "邮箱或密码错误！"})
         else:
             return render(request, "login.html", {"login_form": login_form})
 
