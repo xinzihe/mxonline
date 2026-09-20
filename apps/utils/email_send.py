@@ -56,21 +56,21 @@ def send_register_email(email, send_type="register"):
     email_body = ""
 
     if send_type == "register":
-        email_title = "慕学在线网注册激活链接"
+        email_title = "知行在线网注册激活链接"
         email_body = f"请点击下面的链接激活你的账号: {settings.SITE_URL}/active/{code}/"
 
         send_status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
         if send_status:
             pass
     elif send_type == "forget":
-        email_title = "慕学在线网注册密码重置链接"
+        email_title = "知行在线网注册密码重置链接"
         email_body = f"请点击下面的链接重置密码: {settings.SITE_URL}/reset/{code}/"
 
         send_status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
         if send_status:
             pass
     elif send_type == "update_email":
-        email_title = "慕学在线邮箱修改验证码"
+        email_title = "知行在线邮箱修改验证码"
         email_body = f"你的邮箱验证码为: {code}"
 
         send_status = send_mail(email_title, email_body, settings.EMAIL_FROM, [email])
